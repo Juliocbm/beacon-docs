@@ -1,0 +1,32 @@
+{
+  "name": "beacon-docs",
+  "version": "0.0.0",
+  "description": "Trail markers for AI-collaborative codebases — opinionated documentation convention and CLI.",
+  "type": "module",
+  "bin": {
+    "beacon": "./dist/cli.js"
+  },
+  "main": "./dist/cli.js",
+  "files": ["dist", "README.md", "LICENSE"],
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "typecheck": "tsc --noEmit",
+    "lint": "echo 'No linter configured yet'",
+    "prepublishOnly": "npm run build"
+  },
+  "keywords": ["documentation", "ai", "claude", "cursor", "convention", "cli"],
+  "author": "",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": ""
+  },
+  "dependencies": {},
+  "devDependencies": {}
+}
