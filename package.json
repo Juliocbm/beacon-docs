@@ -39,9 +39,13 @@
     "url": ""
   },
   "devDependencies": {
+    "@types/fs-extra": "^11.0.4",
     "@types/node": "^25.9.1",
     "tsup": "^8.5.1",
     "typescript": "^6.0.3",
     "vitest": "^4.1.7"
+  },
+  "dependencies": {
+    "fs-extra": "^11.3.5"
   }
 }
