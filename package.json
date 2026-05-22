@@ -7,7 +7,11 @@
     "beacon": "./dist/cli.js"
   },
   "main": "./dist/cli.js",
-  "files": ["dist", "README.md", "LICENSE"],
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
   "engines": {
     "node": ">=20"
   },
@@ -20,13 +24,23 @@
     "lint": "echo 'No linter configured yet'",
     "prepublishOnly": "npm run build"
   },
-  "keywords": ["documentation", "ai", "claude", "cursor", "convention", "cli"],
+  "keywords": [
+    "documentation",
+    "ai",
+    "claude",
+    "cursor",
+    "convention",
+    "cli"
+  ],
   "author": "",
   "license": "MIT",
   "repository": {
     "type": "git",
     "url": ""
   },
-  "dependencies": {},
-  "devDependencies": {}
+  "devDependencies": {
+    "@types/node": "^25.9.1",
+    "tsup": "^8.5.1",
+    "typescript": "^6.0.3"
+  }
 }
