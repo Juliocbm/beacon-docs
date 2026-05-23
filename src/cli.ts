@@ -93,6 +93,22 @@ cli
     console.log(`✔ Disabled ${addon}.`);
   });
 
+cli
+  .command("lint", "Validate the docs tree against the convention")
+  .option("--strict", "Escalate warnings to errors")
+  .option("--json", "Emit JSON output")
+  .action(async (opts) => {
+    const { runLintCommand } = await import("./commands/lint");
+    const result = await runLintCommand({
+      root: process.cwd(),
+      strict: !!opts.strict,
+      json: !!opts.json,
+    });
+    process.stdout.write(result.output);
+    if (!opts.json && !result.output.endsWith("\n")) process.stdout.write("\n");
+    process.exit(result.exitCode);
+  });
+
 cli.help();
 cli.version("0.0.0");
 cli.parse();
