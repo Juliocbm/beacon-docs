@@ -4,7 +4,7 @@
   "description": "Trail markers for AI-collaborative codebases — opinionated documentation convention and CLI.",
   "type": "module",
   "bin": {
-    "beacon": "./dist/cli.js"
+    "beacon": "dist/cli.js"
   },
   "main": "./dist/cli.js",
   "files": [
