@@ -38,6 +38,14 @@ cli
     }
   });
 
+cli
+  .command("sync", "Regenerate AI rule files from docs/_meta/convention.md")
+  .action(async () => {
+    const { runSync } = await import("./commands/sync");
+    await runSync({ root: process.cwd() });
+    console.log("✔ AI rule files regenerated.");
+  });
+
 cli.help();
 cli.version("0.0.0");
 cli.parse();
