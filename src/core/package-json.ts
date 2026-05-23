@@ -7,7 +7,7 @@ export async function addDocsLintScript(projectRoot: string): Promise<void> {
 
   const pkg = (await fs.readJson(p)) as { scripts?: Record<string, string> };
   pkg.scripts ??= {};
-  if (!pkg.scripts["docs:lint"]) {
+  if (pkg.scripts["docs:lint"] === undefined) {
     pkg.scripts["docs:lint"] = "beacon lint";
     await fs.writeFile(p, JSON.stringify(pkg, null, 2) + "\n", "utf8");
   }

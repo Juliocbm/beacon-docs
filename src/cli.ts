@@ -1,9 +1,16 @@
 import { cac } from "cac";
 import path from "node:path";
+import { readFileSync } from "node:fs";
+import { fileURLToPath } from "node:url";
 import { runInit, runInitInteractive } from "./commands/init";
 import type { AgentId } from "./core/config";
 import type { ProjectType } from "./core/project-types";
 import type { ExistingFileAction } from "./core/existing-files";
+
+const here = path.dirname(fileURLToPath(import.meta.url));
+const pkg = JSON.parse(
+  readFileSync(path.join(here, "..", "package.json"), "utf8"),
+) as { version: string };
 
 const cli = cac("beacon");
 
@@ -110,7 +117,7 @@ cli
   });
 
 cli.help();
-cli.version("0.0.0");
+cli.version(pkg.version);
 cli.parse();
 
 function splitList(s?: string): string[] {

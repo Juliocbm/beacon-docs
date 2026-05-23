@@ -21,9 +21,9 @@ export async function handleExistingFile(
     return;
   }
 
-  // merge
+  // merge — preserve newContent exactly; do not trim (matches replace/new-file behavior for symmetry)
   const existing = await fs.readFile(filePath, "utf8");
-  const block = `${START}\n${newContent.trim()}\n${END}`;
+  const block = `${START}\n${newContent}\n${END}`;
   if (existing.includes(START) && existing.includes(END)) {
     const re = new RegExp(`${START}[\\s\\S]*?${END}`);
     const merged = existing.replace(re, block);
