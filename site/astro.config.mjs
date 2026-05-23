@@ -2,8 +2,7 @@ import { defineConfig } from "astro/config";
 import starlight from "@astrojs/starlight";
 
 export default defineConfig({
-  site: "https://juliocbm.github.io",
-  base: "/beacon-docs",
+  site: "https://beacon-docs.com",
   integrations: [
     starlight({
       title: "Beacon",
