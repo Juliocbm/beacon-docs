@@ -1,0 +1,20 @@
+{
+  "version": "1.0",
+  "projectType": "cli-tool",
+  "categories": [
+    "reference",
+    "architecture",
+    "adr",
+    "plans",
+    "backlog",
+    "evaluations",
+    "operations"
+  ],
+  "agents": [
+    "claude",
+    "cursor",
+    "codex",
+    "gemini"
+  ],
+  "language": "en"
+}
