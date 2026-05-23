@@ -11,6 +11,8 @@ import type { AgentId, BeaconConfig } from "../core/config";
 import { scaffoldStructure } from "../generators/scaffold";
 import { addDocsLintScript } from "../core/package-json";
 import type { ExistingFileAction } from "../core/existing-files";
+import * as p from "@clack/prompts";
+import { detectContext } from "../core/detect";
 
 export interface InitOptions {
   root: string;
@@ -56,5 +58,93 @@ export async function runInit(options: InitOptions): Promise<BeaconConfig> {
   await scaffoldStructure(options.root, config);
   await addDocsLintScript(options.root);
 
+  return config;
+}
+
+export async function runInitInteractive(opts: { root: string }): Promise<BeaconConfig> {
+  p.intro("Beacon — initialize docs convention");
+
+  const ctx = await detectContext(opts.root);
+
+  const type = (await p.select({
+    message: "Project type?",
+    options: [
+      { value: "web-app", label: "Web Application (full-stack, SaaS)" },
+      { value: "backend-service", label: "Backend Service / API" },
+      { value: "library", label: "Library / SDK / Package" },
+      { value: "cli-tool", label: "CLI Tool" },
+      { value: "mobile-app", label: "Mobile App" },
+      { value: "monorepo", label: "Monorepo / Workspace" },
+      { value: "custom", label: "Custom (no defaults)" },
+    ],
+  })) as ProjectType;
+  if (p.isCancel(type)) {
+    p.cancel("Cancelled.");
+    process.exit(0);
+  }
+
+  const defaults = defaultCategoriesFor(type);
+  const categoryOptions = [...CORE_CATEGORIES, ...ADDON_CATEGORIES].map((c) => ({
+    value: c,
+    label: c,
+    hint: ctx.suggestedAddons.includes(c as never) ? "suggested by detection" : undefined,
+  }));
+
+  const categories = (await p.multiselect({
+    message: "Which categories to enable?",
+    options: categoryOptions,
+    initialValues: defaults,
+    required: false,
+  })) as Category[];
+  if (p.isCancel(categories)) {
+    p.cancel("Cancelled.");
+    process.exit(0);
+  }
+
+  const agents = (await p.multiselect({
+    message: "Which AI agents do you use?",
+    options: [
+      { value: "claude", label: "Claude Code" },
+      { value: "cursor", label: "Cursor" },
+      { value: "codex", label: "Codex / Copilot (AGENTS.md)" },
+      { value: "gemini", label: "Gemini CLI" },
+    ],
+    initialValues: ["claude", "cursor"],
+    required: true,
+  })) as AgentId[];
+  if (p.isCancel(agents)) {
+    p.cancel("Cancelled.");
+    process.exit(0);
+  }
+
+  let existingAction: ExistingFileAction = "replace";
+  if (ctx.existingAgentFiles.length > 0) {
+    const action = await p.select({
+      message: `Existing files found (${ctx.existingAgentFiles.join(", ")}). What do you want to do?`,
+      options: [
+        { value: "merge", label: "Merge — keep existing content, append Beacon section" },
+        { value: "replace", label: "Replace — overwrite with Beacon content" },
+        { value: "skip", label: "Skip — leave them untouched" },
+      ],
+    });
+    if (p.isCancel(action)) {
+      p.cancel("Cancelled.");
+      process.exit(0);
+    }
+    existingAction = action as ExistingFileAction;
+  }
+
+  const config = await runInit({
+    root: opts.root,
+    yes: true,
+    type,
+    with: categories.filter((c) => !defaults.includes(c)),
+    without: defaults.filter((c) => !categories.includes(c)),
+    agents,
+    language: "en",
+    existingFiles: existingAction,
+  });
+
+  p.outro(`Beacon docs scaffolded at ${opts.root}/docs/`);
   return config;
 }

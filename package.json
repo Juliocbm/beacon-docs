@@ -47,6 +47,7 @@
     "vitest": "^4.1.7"
   },
   "dependencies": {
+    "@clack/prompts": "^1.4.0",
     "ejs": "^5.0.2",
     "fs-extra": "^11.3.5"
   }
