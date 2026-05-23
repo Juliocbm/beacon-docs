@@ -40,6 +40,7 @@
     "url": ""
   },
   "devDependencies": {
+    "@changesets/cli": "^2.31.0",
     "@types/ejs": "^3.1.5",
     "@types/fs-extra": "^11.0.4",
     "@types/node": "^25.9.1",
