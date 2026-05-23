@@ -5,7 +5,7 @@ import { writeConfig } from "../core/config";
 import { isArchivable } from "../core/categories";
 import { docsDir, metaDir, categoryDir, archiveDir, conventionPath } from "../core/paths";
 import { renderMasterReadme, renderCategoryReadme } from "./readme";
-import { renderConventionPlaceholder } from "./convention-placeholder";
+import { renderConvention as renderConventionPlaceholder } from "./convention";
 
 export async function scaffoldStructure(
   root: string,

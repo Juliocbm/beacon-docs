@@ -1,0 +1,21 @@
+# <%= title %>
+
+<%= description %>
+
+## Naming
+
+Files in this folder use the suffix **`<%= suffix %>`** and **kebab-case** filenames.
+<% if (numberedPrefix) { -%>
+
+Files are numbered sequentially: `<%= numberedPrefix %>001-`, `<%= numberedPrefix %>002-`, etc.
+<% } -%>
+<% if (datePrefix) { -%>
+
+Files require a `YYYY-MM-DD-` date prefix. Evaluations are immutable temporal snapshots; to revise, create a new dated file.
+<% } -%>
+<% if (archivable) { -%>
+
+## Archiving
+
+Closed documents move to `_archive/`. Never rename a file to `*_DONE.md` or `*_v2.md` — status is tracked by folder, not filename.
+<% } -%>

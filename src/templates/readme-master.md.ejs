@@ -1,0 +1,48 @@
+# Documentation
+
+> Managed by [Beacon](https://beacon-docs.com). Project type: **<%= projectType %>**.
+
+## Where do I find...?
+
+| Question | Folder |
+|---|---|
+<% if (has('reference')) { -%>
+| "How is X done technically?" | `reference/` |
+<% } -%>
+<% if (has('architecture')) { -%>
+| "How is the system structured?" | `architecture/` |
+<% } -%>
+<% if (has('adr')) { -%>
+| "Why was X decided?" | `adr/` |
+<% } -%>
+<% if (has('modules')) { -%>
+| "What does module X do?" | `modules/` |
+<% } -%>
+<% if (has('compliance')) { -%>
+| "Does X comply with regulation Y?" | `compliance/` |
+<% } -%>
+<% if (has('integrations')) { -%>
+| "How do I set up Stripe/email/etc?" | `integrations/` |
+<% } -%>
+<% if (has('operations')) { -%>
+| "How do I deploy / administer X?" | `operations/` |
+<% } -%>
+<% if (has('business')) { -%>
+| "What is the business model?" | `business/` |
+<% } -%>
+<% if (has('plans')) { -%>
+| "What is being built right now?" | `plans/` |
+<% } -%>
+<% if (has('roadmaps')) { -%>
+| "What is planned for the next quarter?" | `roadmaps/` |
+<% } -%>
+<% if (has('backlog')) { -%>
+| "What is on the future backlog?" | `backlog/` |
+<% } -%>
+<% if (has('evaluations')) { -%>
+| "What was the state at date X?" | `evaluations/` |
+<% } -%>
+
+## Convention
+
+The full convention lives at [`_meta/convention.md`](_meta/convention.md). AI agent rule files at the project root are generated from it — never edit those by hand.

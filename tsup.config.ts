@@ -1,4 +1,5 @@
 import { defineConfig } from "tsup";
+import { cp } from "node:fs/promises";
 
 export default defineConfig({
   entry: ["src/cli.ts"],
@@ -11,4 +12,7 @@ export default defineConfig({
   banner: { js: "#!/usr/bin/env node" },
   splitting: false,
   treeshake: true,
+  async onSuccess() {
+    await cp("src/templates", "dist/templates", { recursive: true });
+  },
 });
