@@ -1,0 +1,66 @@
+---
+title: Beacon
+description: Trail markers for AI-collaborative codebases. Opinionated documentation convention + CLI.
+template: splash
+hero:
+  tagline: Trail markers for AI-collaborative codebases.
+  actions:
+    - text: Install
+      link: /install/
+      icon: rocket
+      variant: primary
+    - text: View on GitHub
+      link: https://github.com/Juliocbm/beacon-docs
+      icon: external
+      variant: minimal
+    - text: View on npm
+      link: https://www.npmjs.com/package/beacon-docs
+      icon: external
+      variant: minimal
+---
+
+import { Card, CardGrid } from "@astrojs/starlight/components";
+
+## Why Beacon?
+
+You're building with AI agents — Claude Code, Cursor, Codex, Gemini CLI. After a few weeks, your repo has 47 markdown files in random folders, three versions of the same plan, ADRs duplicated across `/docs`, `/notes`, and `/decisions`, no `CLAUDE.md` or `.cursorrules` telling agents where new docs should go, and a graveyard of "is this still relevant?" content nobody dares delete.
+
+**Beacon ships one opinionated convention and a CLI that enforces it.** AI agents stop creating docs in random places. Humans stop hunting for "the latest version." Reviews stop devolving into "should this be here?"
+
+<CardGrid>
+  <Card title="🗂️ Structure" icon="document">
+    6 core folders every project needs + 6 opt-in add-ons (`compliance`, `business`, `modules`, `integrations`, `operations`, `roadmaps`).
+  </Card>
+  <Card title="🏷️ Naming" icon="information">
+    Filename suffix encodes type (`.plan.md`, `.adr.md`), folder encodes status (`_archive/`). No more `PLAN_v2_FINAL.md`.
+  </Card>
+  <Card title="🤖 AI rule files" icon="setting">
+    Generates `CLAUDE.md`, `AGENTS.md`, `GEMINI.md`, `.cursorrules`, `.cursor/rules/beacon.mdc` from a single source. Every AI agent gets rules in its preferred format.
+  </Card>
+  <Card title="🚨 Linter" icon="approve-check">
+    11 rules validate structure, naming, and AI-file sync. CI-friendly with `--strict` and `--json`.
+  </Card>
+</CardGrid>
+
+## Demo
+
+```bash
+$ npx beacon-docs init
+
+◆ Project type?
+│ ● Library / SDK / Package
+│ ○ Web Application
+│ ○ Backend Service / API
+│ ○ CLI Tool
+
+◆ Which categories to enable?
+│ ◼ reference  ◼ architecture  ◼ adr  ◼ plans  ◼ backlog  ◼ evaluations
+│ ◻ compliance  ◻ business  ◻ modules  ◻ integrations  ◻ operations
+
+◆ Which AI agents do you use?
+│ ◼ Claude Code  ◼ Cursor  ◻ Codex / Copilot  ◻ Gemini CLI
+
+✔ Beacon docs scaffolded at /your/project/docs/
+```
+
+[Get started →](/install/)
