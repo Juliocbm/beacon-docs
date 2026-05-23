@@ -6,11 +6,13 @@ import type { BeaconConfig } from "../core/config";
 import { CATEGORY_META } from "../core/categories";
 import type { Category } from "../core/project-types";
 
-const TEMPLATE_DIR = path.join(
-  path.dirname(fileURLToPath(import.meta.url)),
-  "..",
-  "templates",
-);
+function resolveTemplateDir(): string {
+  const here = path.dirname(fileURLToPath(import.meta.url));
+  const candidate = path.join(here, "templates");
+  if (fs.existsSync(candidate)) return candidate;
+  return path.join(here, "..", "templates");
+}
+const TEMPLATE_DIR = resolveTemplateDir();
 
 const CATEGORY_DESCRIPTIONS: Record<Category, string> = {
   reference: "Replicable technical patterns.",

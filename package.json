@@ -48,6 +48,7 @@
   },
   "dependencies": {
     "@clack/prompts": "^1.4.0",
+    "cac": "^7.0.0",
     "ejs": "^5.0.2",
     "fs-extra": "^11.3.5"
   }
