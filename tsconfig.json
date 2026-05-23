@@ -11,8 +11,7 @@
     "declaration": false,
     "noEmit": true,
     "lib": ["ES2022"],
-    "types": ["node"],
-    "rootDir": "./src"
+    "types": ["node"]
   },
   "include": ["src/**/*.ts", "tests/**/*.ts"],
   "exclude": ["node_modules", "dist"]
