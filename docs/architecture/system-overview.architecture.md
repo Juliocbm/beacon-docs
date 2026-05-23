@@ -1,0 +1,131 @@
+---
+title: System Overview
+updated: 2026-05-22
+---
+
+# System Overview
+
+## Overview
+
+Beacon is a CLI and opinionated documentation convention for AI-collaborative codebases. As AI-assisted
+development tools (Claude Code, Cursor, Codex, Gemini CLI, Aider) generate increasing volumes of project
+documentation — ADRs, plans, technical patterns, conceptual docs — the absence of a shared convention
+leads to a documentation tangle: inconsistent locations, unclear lifecycle, duplicated content, and files
+that AI agents cannot reliably navigate.
+
+Beacon solves this with a fixed core structure, optional add-on categories, suffix-based naming,
+lifecycle-via-folder (not filename), and a single source of truth from which per-vendor AI rule files
+are generated.
+
+**Tagline:** *"Trail markers for AI-collaborative codebases."*
+
+**npm package:** `beacon-docs` — **binary:** `beacon`
+
+## Components
+
+Beacon's source is organized into four distinct layers, each with a strict responsibility boundary:
+
+### `core/` — Data + I/O (pure, unit-testable)
+
+| File | Responsibility |
+|---|---|
+| `config.ts` | Read/write `docs/_meta/beacon.config.json`; defines `BeaconConfig` and `AgentId` types |
+| `project-types.ts` | 7 project types, 6 core categories, 6 add-on categories, default matrix |
+| `categories.ts` | `CategoryMeta` per category: suffix, location, archivable flag, date-prefix flag |
+| `convention.ts` | Parse `docs/_meta/convention.md` content |
+| `detect.ts` | Read `package.json`, `tsconfig.json`, detect existing AI rule files |
+| `paths.ts` | Path resolution helpers (root-relative, category-relative) |
+
+These modules have no side effects and no I/O outside of `config.ts`. They are pure functions that
+accept inputs and return data — independently testable without filesystem mocking.
+
+### `generators/` — Rendering (string/file output, accepts inputs as parameters)
+
+| File | Responsibility |
+|---|---|
+| `scaffold.ts` | Create the enabled folder tree with READMEs and `convention.md` placeholder |
+| `claude.ts` | Render `CLAUDE.md` |
+| `agents.ts` | Render `AGENTS.md` (Codex/Copilot) |
+| `gemini.ts` | Render `GEMINI.md` |
+| `cursor.ts` | Render `.cursorrules` (legacy) and `.cursor/rules/beacon.mdc` (modern) |
+| `readme.ts` | Render category READMEs and the master `docs/README.md` |
+| `doc.ts` | Render a new document with EJS frontmatter template |
+| `ai-rules.ts` | Build universal rules, project-specific rules, and decision tables |
+
+Generators produce strings or write files but receive all inputs as parameters (config, convention
+content, etc.) so they remain testable without spawning a full filesystem.
+
+### `commands/` — Orchestrators (no business logic)
+
+| File | Responsibility |
+|---|---|
+| `init.ts` | `beacon init` wizard: detect context, prompt project type + add-ons + agents, generate scaffold |
+| `new.ts` | `beacon new <type> <slug>`: resolve location, apply EJS template, write file |
+| `archive.ts` | `beacon archive <type> <slug>`: validate TODOs, move to `_archive/`, update README refs |
+| `lint.ts` | `beacon lint`: run all rules, aggregate findings, format output, set exit code |
+| `sync.ts` | `beacon sync`: regenerate all AI rule files from `convention.md` |
+| `toggle.ts` | `beacon enable/disable <addon>`: update config, create/remove folder + README |
+
+Commands contain no business logic — they call `core/` and `generators/`. The CLI entry point
+(`src/cli.ts`) uses `cac` to register and dispatch commands.
+
+### `linter/` — Validation (11 rules)
+
+| Rule file | Severity | What it checks |
+|---|---|---|
+| `suffix-location.ts` | error | Suffix matches category folder |
+| `kebab-case.ts` | error | All filenames are kebab-case |
+| `eval-date-prefix.ts` | error | `.eval.md` files have `YYYY-MM-DD-` prefix |
+| `readme-present.ts` | error | Every active category folder has a `README.md` |
+| `ai-files-sync.ts` | error | Generated AI files match `convention.md` |
+| `adr-numbering.ts` | warning | No unexpected gaps in ADR sequence |
+| `duplicate-titles.ts` | warning | No duplicate titles across categories |
+| `long-files.ts` | warning | No files >1000 lines |
+| `folder-size.ts` | warning | No category folder >30 files |
+| `stale-plans.ts` | suggestion | Plans not updated in >30 days |
+| `adr-status.ts` | suggestion | ADRs without `status` frontmatter |
+
+## Single-Source-of-Truth Flow
+
+`docs/_meta/convention.md` is the **human-edited** source of truth. Running `beacon sync` reads
+it and regenerates all per-vendor AI rule files:
+
+```
+docs/_meta/convention.md  (human-edited)
+         │
+         ├─► CLAUDE.md                    (project root — Claude Code)
+         ├─► AGENTS.md                    (project root — Codex/Copilot)
+         ├─► GEMINI.md                    (project root — Gemini CLI)
+         ├─► .cursorrules                 (project root — legacy Cursor)
+         └─► .cursor/rules/beacon.mdc    (project root — modern Cursor)
+```
+
+Every generated file carries a header:
+```
+<!-- generated by beacon — do not edit. Edit docs/_meta/convention.md and run `beacon sync`. -->
+```
+
+The `ai-files-sync` lint rule validates that all generated files remain in sync with
+`convention.md`. If `convention.md` is edited without running `beacon sync`, `beacon lint`
+fails with exit code 1.
+
+Each generated AI rule file is composed of two layers (see ADR-002):
+- **Universal layer**: 9 rules identical in every project.
+- **Project-specific layer**: only categories enabled in `beacon.config.json` appear.
+
+## Tech Stack
+
+| Concern | Library | Rationale |
+|---|---|---|
+| Interactive prompts | `@clack/prompts` | Best-in-class UX, used by Astro / Nuxt / create-svelte |
+| CLI framework | `cac` | Lightweight, no over-engineering |
+| Template rendering | EJS | Standard, supports conditionals for add-ons |
+| File system ops | `fs-extra` + `fast-glob` | De facto standard for Node tooling |
+| Frontmatter | `gray-matter` | Parsing and writing YAML frontmatter |
+| Bundle | `tsup` | Zero-config, clean output for CLI binaries |
+| Testing | `vitest` | Fast, ESM-native |
+| Release | `changesets` | SemVer + changelog automation |
+| Validation engine | Custom TypeScript | No AST parser needed for folder/naming rules |
+
+**Runtime:** Node >= 20, TypeScript 5+, ESM-first. Published to npm as `beacon-docs` with `bin`
+pointing to `dist/cli.js`.
