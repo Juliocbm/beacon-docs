@@ -22,7 +22,8 @@
     "test:watch": "vitest",
     "typecheck": "tsc --noEmit",
     "lint": "echo 'No linter configured yet'",
-    "prepublishOnly": "npm run build"
+    "prepublishOnly": "npm run build",
+    "docs:lint": "beacon lint"
   },
   "keywords": [
     "documentation",
@@ -50,6 +51,8 @@
     "@clack/prompts": "^1.4.0",
     "cac": "^7.0.0",
     "ejs": "^5.0.2",
-    "fs-extra": "^11.3.5"
+    "fast-glob": "^3.3.3",
+    "fs-extra": "^11.3.5",
+    "gray-matter": "^4.0.3"
   }
 }
