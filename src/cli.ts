@@ -61,6 +61,21 @@ cli
     console.log(`✔ Created ${path.relative(process.cwd(), file)}`);
   });
 
+cli
+  .command("archive <type> <slug>", "Move a completed plan or roadmap to _archive/")
+  .option("--force", "Archive even if unchecked TODOs remain")
+  .action(async (type, slug, opts) => {
+    const { runArchive } = await import("./commands/archive");
+    const result = await runArchive({
+      root: process.cwd(),
+      type, slug, force: !!opts.force,
+    });
+    if (result.warnings.length) {
+      for (const w of result.warnings) console.warn(`⚠ ${w}`);
+    }
+    console.log(`✔ Archived to ${path.relative(process.cwd(), result.destination)}`);
+  });
+
 cli.help();
 cli.version("0.0.0");
 cli.parse();
