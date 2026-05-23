@@ -33,12 +33,16 @@
     "convention",
     "cli"
   ],
-  "author": "",
+  "author": "julio <juliocbm500@gmail.com>",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": ""
+    "url": "git+https://github.com/Juliocbm/beacon-docs.git"
   },
+  "bugs": {
+    "url": "https://github.com/Juliocbm/beacon-docs/issues"
+  },
+  "homepage": "https://github.com/Juliocbm/beacon-docs#readme",
   "devDependencies": {
     "@changesets/cli": "^2.31.0",
     "@types/ejs": "^3.1.5",
