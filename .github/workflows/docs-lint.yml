@@ -1,0 +1,24 @@
+name: Docs lint
+on:
+  pull_request:
+    paths:
+      - "docs/**"
+      - "CLAUDE.md"
+      - "AGENTS.md"
+      - "GEMINI.md"
+      - ".cursorrules"
+      - ".cursor/**"
+  push:
+    branches: [main]
+jobs:
+  beacon-lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - run: node dist/cli.js lint --strict
