@@ -76,6 +76,23 @@ cli
     console.log(`✔ Archived to ${path.relative(process.cwd(), result.destination)}`);
   });
 
+cli
+  .command("enable <addon>", "Enable an add-on category")
+  .action(async (addon) => {
+    const { runEnable } = await import("./commands/toggle");
+    await runEnable({ root: process.cwd(), addon });
+    console.log(`✔ Enabled ${addon}.`);
+  });
+
+cli
+  .command("disable <addon>", "Disable an add-on category")
+  .option("--force", "Disable even if the folder has documents")
+  .action(async (addon, opts) => {
+    const { runDisable } = await import("./commands/toggle");
+    await runDisable({ root: process.cwd(), addon, force: !!opts.force });
+    console.log(`✔ Disabled ${addon}.`);
+  });
+
 cli.help();
 cli.version("0.0.0");
 cli.parse();
