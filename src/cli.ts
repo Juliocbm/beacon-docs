@@ -1,4 +1,5 @@
 import { cac } from "cac";
+import path from "node:path";
 import { runInit, runInitInteractive } from "./commands/init";
 import type { AgentId } from "./core/config";
 import type { ProjectType } from "./core/project-types";
@@ -44,6 +45,20 @@ cli
     const { runSync } = await import("./commands/sync");
     await runSync({ root: process.cwd() });
     console.log("✔ AI rule files regenerated.");
+  });
+
+cli
+  .command("new <type> <slug>", "Create a new doc with correct location and naming")
+  .option("--category <cat>", "Disambiguate for `guide` (integrations|operations)")
+  .action(async (type, slug, opts) => {
+    const { runNew } = await import("./commands/new");
+    const today = new Date().toISOString().slice(0, 10);
+    const file = await runNew({
+      root: process.cwd(),
+      type, slug, today,
+      category: opts.category,
+    });
+    console.log(`✔ Created ${path.relative(process.cwd(), file)}`);
   });
 
 cli.help();
