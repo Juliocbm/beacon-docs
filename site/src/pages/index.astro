@@ -1,0 +1,595 @@
+---
+import "../styles/landing.css";
+import FeatureCard from "../components/FeatureCard.astro";
+import ComparisonTable from "../components/ComparisonTable.astro";
+
+const base = import.meta.env.BASE_URL.replace(/\/$/, "");
+const docsBase = base || "";
+
+const installCmd = "npx beacon-docs init";
+---
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Opinionated documentation convention + CLI that scaffolds the structure, generates per-vendor AI rule files (Claude, Cursor, Codex, Gemini), and lints the result." />
+  <title>Beacon — Trail markers for AI-collaborative codebases</title>
+  <link rel="icon" type="image/svg+xml" href={`${base}/favicon.svg`} />
+  <!-- Preconnect for web fonts (optional, gracefully degrades) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
+</head>
+<body>
+
+<!-- ========== NAV ========== -->
+<nav class="nav">
+  <div class="container">
+    <a href={`${base}/`} class="nav-brand">
+      <!-- Inline logo SVG (80px variant) -->
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="28" height="28" aria-hidden="true">
+        <defs>
+          <linearGradient id="beam-nav" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#fbbf24" stop-opacity="0.9"/>
+            <stop offset="100%" stop-color="#fbbf24" stop-opacity="0"/>
+          </linearGradient>
+        </defs>
+        <path d="M24 14 L8 42 L40 42 Z" fill="url(#beam-nav)" opacity="0.7"/>
+        <rect x="20" y="18" width="8" height="22" rx="1" fill="#3b82f6"/>
+        <rect x="18" y="12" width="12" height="8" rx="2" fill="#1e40af"/>
+        <rect x="22" y="8" width="4" height="4" rx="1" fill="#1e3a8a"/>
+        <rect x="16" y="40" width="16" height="4" rx="1" fill="#1e3a8a"/>
+      </svg>
+      Beacon
+    </a>
+    <ul class="nav-links">
+      <li><a href={`${docsBase}/install/`}>Install</a></li>
+      <li><a href={`${docsBase}/commands/`}>Commands</a></li>
+      <li><a href="https://github.com/Juliocbm/beacon-docs" target="_blank" rel="noopener">GitHub</a></li>
+      <li><a href={`${docsBase}/install/`} class="btn-nav">Get started →</a></li>
+    </ul>
+  </div>
+</nav>
+
+<!-- ========== HERO ========== -->
+<section class="hero">
+  <div class="container" style="display:flex;flex-direction:column;align-items:center;">
+    <div class="hero-logo" aria-hidden="true">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="96" height="96">
+        <defs>
+          <linearGradient id="beam-hero" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#fbbf24" stop-opacity="0.9"/>
+            <stop offset="100%" stop-color="#fbbf24" stop-opacity="0"/>
+          </linearGradient>
+        </defs>
+        <path d="M24 14 L8 42 L40 42 Z" fill="url(#beam-hero)" opacity="0.7"/>
+        <rect x="20" y="18" width="8" height="22" rx="1" fill="#3b82f6"/>
+        <rect x="18" y="12" width="12" height="8" rx="2" fill="#1e40af"/>
+        <rect x="22" y="8" width="4" height="4" rx="1" fill="#1e3a8a"/>
+        <rect x="16" y="40" width="16" height="4" rx="1" fill="#1e3a8a"/>
+      </svg>
+    </div>
+
+    <h1 class="hero-title">Beacon</h1>
+
+    <p class="hero-tagline">Trail markers for AI-collaborative codebases.</p>
+
+    <p class="hero-description">
+      Opinionated documentation convention + CLI that scaffolds the structure,
+      generates per-vendor AI rule files (Claude, Cursor, Codex, Gemini),
+      and lints the result.
+    </p>
+
+    <!-- Install command box -->
+    <div class="install-box" id="install-box">
+      <div class="install-prompt">
+        <span class="dollar">$</span>
+        <span class="cmd" id="install-cmd-text">{installCmd}</span>
+      </div>
+      <button class="copy-btn" id="copy-install" aria-label="Copy install command">
+        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+          <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+        </svg>
+        Copy
+      </button>
+    </div>
+
+    <div class="hero-ctas">
+      <a href={`${docsBase}/install/`} class="btn btn-primary">
+        Read the docs
+        <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </a>
+      <a href="https://github.com/Juliocbm/beacon-docs" target="_blank" rel="noopener" class="btn btn-secondary">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.3 3.438 9.8 8.205 11.387.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23A11.509 11.509 0 0 1 12 5.803c1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.929.43.372.823 1.102.823 2.222 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 21.795 24 17.295 24 12c0-6.63-5.37-12-12-12z"/></svg>
+        View on GitHub
+      </a>
+    </div>
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- ========== COMMANDS SECTION ========== -->
+<section class="commands-section">
+  <div class="container">
+    <p class="section-label">CLI</p>
+    <h2 class="section-header">The convention. Plus the tools to enforce it.</h2>
+    <p class="section-sub">Four commands cover the full lifecycle of AI-ready documentation.</p>
+
+    <div class="commands-grid">
+      <FeatureCard
+        command="beacon init"
+        tagline="Interactive scaffold wizard."
+        bullets={[
+          "7 project types with smart detection from package.json",
+          "6 core + 6 opt-in category add-ons",
+          "Generates AI rule files for 4 vendors simultaneously",
+          "Non-interactive mode for CI with --yes --type=...",
+        ]}
+      />
+      <FeatureCard
+        command="beacon sync"
+        tagline="Single source of truth."
+        bullets={[
+          "Edit one convention.md, regenerate everything atomically",
+          "Outputs: CLAUDE.md, AGENTS.md, GEMINI.md, .cursorrules, .cursor/rules/beacon.mdc",
+          "Idempotent — safe in pre-commit hooks",
+          "Caught by beacon lint --strict if you forget to run it",
+        ]}
+      />
+      <FeatureCard
+        command="beacon new"
+        tagline="Type-safe doc creation."
+        bullets={[
+          "11 doc types: plan, adr, pattern, architecture, module, guide, roadmap, todo, eval, compliance, business",
+          "ADRs auto-numbered (ADR-001-, ADR-002-…)",
+          "Evaluations date-prefixed (2026-05-22-name.eval.md)",
+          "Frontmatter pre-populated, correct folder enforced",
+        ]}
+      />
+      <FeatureCard
+        command="beacon lint"
+        tagline="11 enforced rules."
+        bullets={[
+          "Errors: suffix/location mismatch, kebab-case, missing READMEs, AI-file sync drift",
+          "Warnings: duplicate H1s, oversized files, ADR gaps, plans without TODOs",
+          "--strict for CI gate (warnings become errors)",
+          "--json for machine-readable output",
+        ]}
+      />
+    </div>
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- ========== COMPARISON TABLE ========== -->
+<section class="comparison-section">
+  <div class="container">
+    <p class="section-label">Comparison</p>
+    <h2 class="section-header">What's different about Beacon?</h2>
+    <p class="section-sub">
+      No other tool combines convention + enforcement + AI rule generation in one place.
+    </p>
+    <ComparisonTable />
+    <p style="margin-top:1rem;font-size:0.78rem;color:var(--text-dim);">
+      <span class="dot dot-yes" style="width:0.7rem;height:0.7rem;display:inline-block;border-radius:50%;vertical-align:middle;margin-right:3px;background:var(--success)"></span> Yes &nbsp;&nbsp;
+      <span class="dot dot-partial" style="width:0.7rem;height:0.7rem;display:inline-block;border-radius:50%;vertical-align:middle;margin-right:3px;background:var(--warning)"></span> Partial &nbsp;&nbsp;
+      <span class="dot dot-no" style="width:0.7rem;height:0.7rem;display:inline-block;border-radius:50%;vertical-align:middle;margin-right:3px;background:var(--danger);opacity:0.7"></span> No
+    </p>
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- ========== SSOT FLOW ========== -->
+<section class="ssot-section">
+  <div class="container">
+    <p class="section-label">Architecture</p>
+    <h2 class="section-header">Five AI agents. One convention. Zero drift.</h2>
+    <p class="section-sub">
+      Edit the source once. Beacon regenerates every vendor-specific file automatically.
+    </p>
+
+    <div class="ssot-visual">
+      <!-- Source -->
+      <div class="ssot-source">
+        <div class="file-name">docs/_meta/convention.md</div>
+        <div class="file-desc">
+          # Documentation Convention<br/>
+          &gt; Project type: library<br/><br/>
+          ## Structure rules<br/>
+          1. One doc = one category.<br/>
+          2. Status via folder, never filename.<br/>
+          3. kebab-case for all filenames.<br/>
+          ...<br/>
+          ## Where does X go?<br/>
+          | architecture/ | How the system is built |<br/>
+          | adr/          | Why decisions were made  |<br/>
+          | plans/        | What's being built now   |
+        </div>
+      </div>
+
+      <!-- Arrow -->
+      <div class="ssot-arrow-col">
+        <div class="ssot-cmd">beacon sync</div>
+        <div class="ssot-arrow">→</div>
+      </div>
+
+      <!-- Targets -->
+      <div class="ssot-targets">
+        <div class="ssot-file"><span class="ssot-file-dot"></span>CLAUDE.md</div>
+        <div class="ssot-file"><span class="ssot-file-dot"></span>AGENTS.md</div>
+        <div class="ssot-file"><span class="ssot-file-dot"></span>GEMINI.md</div>
+        <div class="ssot-file"><span class="ssot-file-dot"></span>.cursorrules</div>
+        <div class="ssot-file"><span class="ssot-file-dot"></span>.cursor/rules/beacon.mdc</div>
+      </div>
+    </div>
+
+    <p class="ssot-caption">
+      Edit the convention once. <code>beacon sync</code> regenerates everything.
+      <code>beacon lint --strict</code> catches drift in CI.
+    </p>
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- ========== FILE TREE ========== -->
+<section class="filetree-section">
+  <div class="container">
+    <p class="section-label">Output</p>
+    <h2 class="section-header">What you get after <code style="font-size:0.85em;background:var(--bg-code);padding:0.1em 0.3em;border-radius:4px;border:1px solid var(--border)">beacon init</code></h2>
+    <p class="section-sub">A complete, navigable docs structure plus AI rule files — ready in under 30 seconds.</p>
+
+    <div class="filetree-grid">
+      <!-- Left: file tree -->
+      <div>
+        <p class="panel-label">File tree</p>
+        <div class="code-panel">
+          <div class="code-panel-header">
+            <span class="code-panel-dot red"></span>
+            <span class="code-panel-dot yellow"></span>
+            <span class="code-panel-dot green"></span>
+            <span class="code-panel-title">your-project/</span>
+          </div>
+          <pre><span class="tree-generated">├── CLAUDE.md                  ← generated</span>
+<span class="tree-generated">├── AGENTS.md                  ← generated</span>
+<span class="tree-generated">├── GEMINI.md                  ← generated</span>
+<span class="tree-generated">├── .cursorrules               ← generated</span>
+<span class="tree-generated">├── .cursor/rules/beacon.mdc   ← generated</span>
+<span class="tree-file">├── package.json               ← gets docs:lint</span>
+<span class="tree-dir">└── docs/</span>
+<span class="tree-file">    ├── README.md              ← master index</span>
+<span class="tree-dir">    ├── _meta/</span>
+<span class="tree-file">    │   ├── convention.md      ← you edit this</span>
+<span class="tree-file">    │   └── beacon.config.json</span>
+<span class="tree-dir">    ├── reference/</span>
+<span class="tree-dir">    ├── architecture/</span>
+<span class="tree-dir">    ├── adr/</span>
+<span class="tree-dir">    ├── plans/</span>
+<span class="tree-dir">    │   └── _archive/</span>
+<span class="tree-dir">    ├── backlog/</span>
+<span class="tree-dir">    └── evaluations/</span></pre>
+        </div>
+      </div>
+
+      <!-- Right: CLAUDE.md preview -->
+      <div>
+        <p class="panel-label">Generated CLAUDE.md (preview)</p>
+        <div class="code-panel code-block-wrap">
+          <div class="code-panel-header">
+            <span class="code-panel-dot red"></span>
+            <span class="code-panel-dot yellow"></span>
+            <span class="code-panel-dot green"></span>
+            <span class="code-panel-title">CLAUDE.md</span>
+          </div>
+          <button class="code-block-copy" data-copy="# Documentation Convention
+
+> Project type: **library**. Single source: docs/_meta/convention.md
+
+## Universal rules
+
+1. One doc = one category. Never duplicate.
+2. Status via folder, never filename. Closed plan → _archive/
+3. kebab-case for all filenames.
+4. README required in every category folder.
+5. ADRs are append-only. Supersede with a new ADR.
+6. Evaluations are immutable snapshots.
+7. Plans archive to _archive/ when done.
+8. Generated AI files must match convention.md. Run beacon sync.
+9. Don't create folders outside the convention.
+
+## Where does X go?
+
+| Question                          | Folder        |
+|-----------------------------------|---------------|
+| How is X done technically?        | reference/    |
+| How is the system structured?     | architecture/ |
+| Why was X decided?                | adr/          |
+| What is being built right now?    | plans/        |
+| What is on the future backlog?    | backlog/      |
+| What was the state at date X?     | evaluations/  |">Copy</button>
+          <pre><span class="md-h1"># Documentation Convention</span>
+
+<span class="md-meta">&gt; Project type: **library**.</span>
+<span class="md-meta">&gt; Single source: docs/_meta/convention.md</span>
+
+<span class="md-h2">## Universal rules</span>
+
+<span class="md-rule">1. One doc = one category. Never duplicate.</span>
+<span class="md-rule">2. Status via folder, never filename.</span>
+<span class="md-rule">   Closed plan → _archive/, not *_DONE.md</span>
+<span class="md-rule">3. kebab-case for all filenames.</span>
+<span class="md-rule">4. README required in every category folder.</span>
+<span class="md-rule">5. ADRs are append-only. Supersede with a new ADR.</span>
+<span class="md-rule">6. Evaluations are immutable snapshots.</span>
+<span class="md-rule">7. Plans archive to _archive/ when done.</span>
+<span class="md-rule">8. Generated AI files must match convention.md.</span>
+<span class="md-rule">   Run beacon sync after editing the convention.</span>
+<span class="md-rule">9. Don't create folders outside the convention.</span>
+
+<span class="md-h2">## Where does X go?</span>
+
+<span class="md-bullet">| How is X done technically?     | reference/    |</span>
+<span class="md-bullet">| How is the system structured?  | architecture/ |</span>
+<span class="md-bullet">| Why was X decided?             | adr/          |</span>
+<span class="md-bullet">| What is being built right now? | plans/        |</span>
+<span class="md-bullet">| What's on the future backlog?  | backlog/      |</span>
+<span class="fade">...</span></pre>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- ========== PROJECT TYPES ========== -->
+<section class="types-section">
+  <div class="container">
+    <p class="section-label">Init wizard</p>
+    <h2 class="section-header">7 project types. Smart defaults.</h2>
+    <p class="section-sub">
+      The wizard reads your <code style="font-family:var(--mono);font-size:0.9em">package.json</code> and suggests the right categories automatically.
+    </p>
+
+    <div class="types-grid">
+      <div class="type-card">
+        <div class="type-card-name">web-app</div>
+        <p class="type-card-desc">Frontend or fullstack web application.</p>
+        <div class="type-badges">
+          <span class="badge">reference</span>
+          <span class="badge">architecture</span>
+          <span class="badge">adr</span>
+          <span class="badge">plans</span>
+          <span class="badge">backlog</span>
+        </div>
+      </div>
+      <div class="type-card">
+        <div class="type-card-name">backend-service</div>
+        <p class="type-card-desc">API, microservice, or server-side application.</p>
+        <div class="type-badges">
+          <span class="badge">reference</span>
+          <span class="badge">architecture</span>
+          <span class="badge">adr</span>
+          <span class="badge">plans</span>
+          <span class="badge">operations</span>
+        </div>
+      </div>
+      <div class="type-card">
+        <div class="type-card-name">library</div>
+        <p class="type-card-desc">SDK, npm package, or shared module.</p>
+        <div class="type-badges">
+          <span class="badge">reference</span>
+          <span class="badge">architecture</span>
+          <span class="badge">adr</span>
+          <span class="badge">evaluations</span>
+        </div>
+      </div>
+      <div class="type-card">
+        <div class="type-card-name">cli-tool</div>
+        <p class="type-card-desc">Command-line tool or developer utility.</p>
+        <div class="type-badges">
+          <span class="badge">reference</span>
+          <span class="badge">adr</span>
+          <span class="badge">plans</span>
+          <span class="badge">backlog</span>
+        </div>
+      </div>
+      <div class="type-card">
+        <div class="type-card-name">mobile-app</div>
+        <p class="type-card-desc">iOS, Android, or cross-platform mobile app.</p>
+        <div class="type-badges">
+          <span class="badge">reference</span>
+          <span class="badge">architecture</span>
+          <span class="badge">adr</span>
+          <span class="badge">plans</span>
+        </div>
+      </div>
+      <div class="type-card">
+        <div class="type-card-name">monorepo</div>
+        <p class="type-card-desc">Multi-package or multi-app workspace.</p>
+        <div class="type-badges">
+          <span class="badge">reference</span>
+          <span class="badge">architecture</span>
+          <span class="badge">adr</span>
+          <span class="badge">modules</span>
+          <span class="badge">plans</span>
+        </div>
+      </div>
+      <div class="type-card">
+        <div class="type-card-name">custom</div>
+        <p class="type-card-desc">Pick exactly what you need. Fully manual.</p>
+        <div class="type-badges">
+          <span class="badge">your choice</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- ========== CI SECTION ========== -->
+<section class="ci-section">
+  <div class="container">
+    <p class="section-label">CI / CD</p>
+    <h2 class="section-header">Drop into your existing CI.</h2>
+
+    <div class="ci-grid">
+      <div class="ci-prose">
+        <p>Beacon's linter exits with code 1 on errors, making it a first-class CI gate. Add the workflow once and let it catch drift automatically.</p>
+        <ul>
+          <li>Runs only when docs or AI files change (paths filter)</li>
+          <li><code style="font-family:var(--mono);font-size:0.85em">--strict</code> escalates warnings to errors in CI</li>
+          <li><code style="font-family:var(--mono);font-size:0.85em">--json</code> for structured output in tooling</li>
+          <li>Zero extra setup — npx handles the install</li>
+        </ul>
+      </div>
+
+      <div class="code-block-wrap">
+        <div class="code-panel">
+          <div class="code-panel-header">
+            <span class="code-panel-dot red"></span>
+            <span class="code-panel-dot yellow"></span>
+            <span class="code-panel-dot green"></span>
+            <span class="code-panel-title">.github/workflows/docs-lint.yml</span>
+          </div>
+          <pre style="padding:1.25rem 1.5rem;font-family:var(--mono);font-size:0.8rem;line-height:1.75;color:var(--text-muted);overflow-x:auto;margin:0;"><span style="color:var(--accent-bright)">name</span><span style="color:var(--text)">:</span> Beacon docs lint
+<span style="color:var(--accent-bright)">on</span><span style="color:var(--text)">:</span>
+  <span style="color:var(--accent-bright)">pull_request</span><span style="color:var(--text)">:</span>
+    <span style="color:var(--accent-bright)">paths</span><span style="color:var(--text)">:</span> <span style="color:var(--success)">["docs/**", "CLAUDE.md", "AGENTS.md",</span>
+             <span style="color:var(--success)">"GEMINI.md", ".cursorrules", ".cursor/**"]</span>
+  <span style="color:var(--accent-bright)">push</span><span style="color:var(--text)">:</span>
+    <span style="color:var(--accent-bright)">branches</span><span style="color:var(--text)">:</span> <span style="color:var(--success)">[main]</span>
+<span style="color:var(--accent-bright)">jobs</span><span style="color:var(--text)">:</span>
+  <span style="color:var(--accent-bright)">beacon-lint</span><span style="color:var(--text)">:</span>
+    <span style="color:var(--accent-bright)">runs-on</span><span style="color:var(--text)">:</span> ubuntu-latest
+    <span style="color:var(--accent-bright)">steps</span><span style="color:var(--text)">:</span>
+      - <span style="color:var(--accent-bright)">uses</span><span style="color:var(--text)">:</span> actions/checkout@v4
+      - <span style="color:var(--accent-bright)">uses</span><span style="color:var(--text)">:</span> actions/setup-node@v4
+        <span style="color:var(--accent-bright)">with</span><span style="color:var(--text)">:</span> <span style="color:var(--text-dim)">&#123; node-version: 20 &#125;</span>
+      - <span style="color:var(--accent-bright)">run</span><span style="color:var(--text)">:</span> npx beacon-docs lint --strict</pre>
+        </div>
+        <button class="code-block-copy" data-copy="name: Beacon docs lint
+on:
+  pull_request:
+    paths: [&quot;docs/**&quot;, &quot;CLAUDE.md&quot;, &quot;AGENTS.md&quot;, &quot;GEMINI.md&quot;, &quot;.cursorrules&quot;, &quot;.cursor/**&quot;]
+  push:
+    branches: [main]
+jobs:
+  beacon-lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 20 }
+      - run: npx beacon-docs lint --strict">Copy</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- ========== FINAL CTA ========== -->
+<section class="cta-section">
+  <div class="container">
+    <h2 class="cta-title">Start in 30 seconds.</h2>
+    <p class="cta-sub">One command. Complete docs structure. AI rules for every agent.</p>
+
+    <div class="install-box" style="margin-inline:auto;margin-bottom:1.75rem;">
+      <div class="install-prompt">
+        <span class="dollar">$</span>
+        <span class="cmd" id="install-cmd-cta">{installCmd}</span>
+      </div>
+      <button class="copy-btn" id="copy-cta" aria-label="Copy install command">
+        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+          <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+        </svg>
+        Copy
+      </button>
+    </div>
+
+    <div class="hero-ctas">
+      <a href={`${docsBase}/install/`} class="btn btn-primary">
+        Read the docs
+        <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </a>
+      <a href="https://github.com/Juliocbm/beacon-docs" target="_blank" rel="noopener" class="btn btn-secondary">
+        GitHub →
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ========== FOOTER ========== -->
+<footer class="footer">
+  <div class="container">
+    <div class="footer-inner">
+      <span>MIT License</span>
+      <span class="footer-sep">·</span>
+      <span>Made by <a href="https://github.com/Juliocbm" target="_blank" rel="noopener">julio</a></span>
+      <span class="footer-sep">·</span>
+      <span><code style="font-family:var(--mono);font-size:0.8em">v0.1.0</code></span>
+      <span class="footer-sep">·</span>
+      <a href="https://www.npmjs.com/package/beacon-docs" target="_blank" rel="noopener">npm</a>
+      <span class="footer-sep">·</span>
+      <a href="https://github.com/Juliocbm/beacon-docs" target="_blank" rel="noopener">GitHub</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+  // Copy-to-clipboard helper
+  function setupCopy(btnId: string, textId: string): void {
+    const btn = document.getElementById(btnId) as HTMLButtonElement | null;
+    const textEl = document.getElementById(textId) as HTMLElement | null;
+    if (!btn || !textEl) return;
+    btn.addEventListener('click', async () => {
+      const text = textEl.textContent?.trim() ?? '';
+      try {
+        await navigator.clipboard.writeText(text);
+        btn.classList.add('copied');
+        btn.textContent = '✓ Copied';
+        setTimeout(() => {
+          btn.classList.remove('copied');
+          // Restore original content
+          btn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg> Copy`;
+        }, 2000);
+      } catch {
+        btn.textContent = 'Failed';
+      }
+    });
+  }
+
+  setupCopy('copy-install', 'install-cmd-text');
+  setupCopy('copy-cta', 'install-cmd-cta');
+
+  // Generic code block copy buttons (data-copy attr)
+  document.querySelectorAll<HTMLButtonElement>('.code-block-copy[data-copy]').forEach((btn) => {
+    btn.addEventListener('click', async () => {
+      const text = btn.dataset.copy ?? '';
+      try {
+        await navigator.clipboard.writeText(text);
+        btn.classList.add('copied');
+        const orig = btn.textContent;
+        btn.textContent = '✓ Copied';
+        setTimeout(() => {
+          btn.classList.remove('copied');
+          btn.textContent = orig;
+        }, 2000);
+      } catch {
+        btn.textContent = 'Failed';
+      }
+    });
+  });
+</script>
+
+</body>
+</html>

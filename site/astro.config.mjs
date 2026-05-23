@@ -23,7 +23,6 @@ export default defineConfig({
       },
       lastUpdated: true,
       sidebar: [
-        { label: "Introduction", link: "/" },
         { label: "Install & quick start", link: "/install/" },
         { label: "Commands", link: "/commands/" },
         {

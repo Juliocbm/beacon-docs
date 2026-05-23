@@ -1,0 +1,16 @@
+---
+interface Props {
+  command: string;
+  tagline: string;
+  bullets: string[];
+}
+const { command, tagline, bullets } = Astro.props;
+---
+
+<div class="command-card">
+  <span class="command-card-name">{command}</span>
+  <p class="command-card-tag">{tagline}</p>
+  <ul>
+    {bullets.map((b) => <li>{b}</li>)}
+  </ul>
+</div>

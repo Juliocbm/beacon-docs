@@ -1,0 +1,77 @@
+---
+// y = yes (green), n = no (red), p = partial (yellow)
+type Val = 'y' | 'n' | 'p';
+
+interface Row {
+  feature: string;
+  beacon: Val;
+  diataxis: Val;
+  adrtools: Val;
+  handwritten: Val;
+  docusaurus: Val;
+}
+
+const rows: Row[] = [
+  { feature: 'Opinionated structure',                beacon:'y', diataxis:'y', adrtools:'n', handwritten:'n', docusaurus:'y'  },
+  { feature: 'Convention enforcement (linter)',       beacon:'y', diataxis:'n', adrtools:'n', handwritten:'n', docusaurus:'n'  },
+  { feature: 'AI rule files generation',             beacon:'y', diataxis:'n', adrtools:'n', handwritten:'p', docusaurus:'n'  },
+  { feature: 'Multi-vendor support (Claude/Cursor/Codex/Gemini)', beacon:'y', diataxis:'n', adrtools:'n', handwritten:'n', docusaurus:'n' },
+  { feature: 'Per-vendor format (.md / .mdc / .cursorrules)', beacon:'y', diataxis:'n', adrtools:'n', handwritten:'p', docusaurus:'n' },
+  { feature: 'Auto-sync (single source of truth)',   beacon:'y', diataxis:'n', adrtools:'n', handwritten:'n', docusaurus:'n'  },
+  { feature: 'Per-doc-type naming convention',       beacon:'y', diataxis:'p', adrtools:'p', handwritten:'n', docusaurus:'n'  },
+  { feature: 'Status via folder (not filename)',      beacon:'y', diataxis:'p', adrtools:'n', handwritten:'n', docusaurus:'n'  },
+  { feature: 'ADR auto-numbering',                   beacon:'y', diataxis:'n', adrtools:'y', handwritten:'n', docusaurus:'n'  },
+  { feature: 'Date-prefixed evaluations',            beacon:'y', diataxis:'n', adrtools:'n', handwritten:'n', docusaurus:'n'  },
+  { feature: 'Configurable add-ons (compliance, business, modules…)', beacon:'y', diataxis:'n', adrtools:'n', handwritten:'n', docusaurus:'p' },
+  { feature: 'CI-ready out of the box',              beacon:'y', diataxis:'n', adrtools:'n', handwritten:'n', docusaurus:'n'  },
+  { feature: 'Zero config required (sensible defaults)', beacon:'y', diataxis:'n', adrtools:'p', handwritten:'y', docusaurus:'n' },
+];
+
+const tools = [
+  { key: 'beacon',      label: 'Beacon',           sub: '(this)' },
+  { key: 'diataxis',    label: 'Diátaxis',          sub: 'framework' },
+  { key: 'adrtools',    label: 'adr-tools',         sub: 'ADRs only' },
+  { key: 'handwritten', label: 'Hand-written',      sub: 'CLAUDE.md' },
+  { key: 'docusaurus',  label: 'Docusaurus',        sub: 'docs site' },
+];
+
+function dot(v: Val) {
+  if (v === 'y') return '<span class="dot dot-yes" title="Yes"></span>';
+  if (v === 'n') return '<span class="dot dot-no" title="No"></span>';
+  return '<span class="dot dot-partial" title="Partial"></span>';
+}
+---
+
+<div class="comparison-wrapper">
+  <table class="comparison-table">
+    <thead>
+      <tr>
+        <th class="feature-col">Feature</th>
+        {tools.map((t) => (
+          <th class={t.key === 'beacon' ? 'beacon-col' : ''}>
+            {t.label}<br/><small style="font-weight:400;opacity:0.7">{t.sub}</small>
+          </th>
+        ))}
+      </tr>
+    </thead>
+    <tbody>
+      {rows.map((r) => (
+        <tr>
+          <td class="feature-name">{r.feature}</td>
+          <td class="beacon-cell" set:html={dot(r.beacon)} />
+          <td set:html={dot(r.diataxis)} />
+          <td set:html={dot(r.adrtools)} />
+          <td set:html={dot(r.handwritten)} />
+          <td set:html={dot(r.docusaurus)} />
+        </tr>
+      ))}
+    </tbody>
+  </table>
+</div>
+
+<style>
+.comparison-wrapper {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+</style>
