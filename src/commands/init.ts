@@ -59,7 +59,7 @@ export async function runInit(options: InitOptions): Promise<BeaconConfig> {
   await addDocsLintScript(options.root);
 
   const { runSync } = await import("./sync");
-  await runSync({ root: options.root });
+  await runSync({ root: options.root, silent: true });
 
   return config;
 }

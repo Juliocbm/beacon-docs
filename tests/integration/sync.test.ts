@@ -27,24 +27,24 @@ afterEach(async () => {
 
 describe("beacon sync", () => {
   it("generates CLAUDE.md when claude is in agents", async () => {
-    await runSync({ root: tmp });
+    await runSync({ root: tmp, silent: true });
     expect(await fs.pathExists(path.join(tmp, "CLAUDE.md"))).toBe(true);
     const md = await fs.readFile(path.join(tmp, "CLAUDE.md"), "utf8");
     expect(md).toContain("Universal rules");
   });
 
   it("generates AGENTS.md when codex is in agents", async () => {
-    await runSync({ root: tmp });
+    await runSync({ root: tmp, silent: true });
     expect(await fs.pathExists(path.join(tmp, "AGENTS.md"))).toBe(true);
   });
 
   it("generates GEMINI.md when gemini is in agents", async () => {
-    await runSync({ root: tmp });
+    await runSync({ root: tmp, silent: true });
     expect(await fs.pathExists(path.join(tmp, "GEMINI.md"))).toBe(true);
   });
 
   it("generates .cursorrules and .cursor/rules/beacon.mdc when cursor is in agents", async () => {
-    await runSync({ root: tmp });
+    await runSync({ root: tmp, silent: true });
     expect(await fs.pathExists(path.join(tmp, ".cursorrules"))).toBe(true);
     expect(await fs.pathExists(path.join(tmp, ".cursor", "rules", "beacon.mdc"))).toBe(true);
   });
@@ -63,7 +63,7 @@ describe("beacon sync", () => {
       language: "en",
       existingFiles: "replace",
     });
-    await runSync({ root: tmp });
+    await runSync({ root: tmp, silent: true });
     expect(await fs.pathExists(path.join(tmp, "CLAUDE.md"))).toBe(true);
     expect(await fs.pathExists(path.join(tmp, "AGENTS.md"))).toBe(false);
     expect(await fs.pathExists(path.join(tmp, "GEMINI.md"))).toBe(false);
@@ -71,9 +71,9 @@ describe("beacon sync", () => {
   });
 
   it("is idempotent — repeated runs produce identical files", async () => {
-    await runSync({ root: tmp });
+    await runSync({ root: tmp, silent: true });
     const a = await fs.readFile(path.join(tmp, "CLAUDE.md"), "utf8");
-    await runSync({ root: tmp });
+    await runSync({ root: tmp, silent: true });
     const b = await fs.readFile(path.join(tmp, "CLAUDE.md"), "utf8");
     expect(a).toBe(b);
   });
