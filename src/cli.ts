@@ -4,11 +4,13 @@ import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { runInit, runInitInteractive } from "./commands/init";
 import type { AgentId } from "./core/config";
-import type { ProjectType } from "./core/project-types";
+import { ADDON_CATEGORIES, type ProjectType } from "./core/project-types";
 import type { ExistingFileAction } from "./core/existing-files";
 import { renderLogo } from "./ui/logo";
 import { c } from "./ui/colors";
 import { CHECK, CROSS, WARN, ARROW } from "./ui/glyphs";
+import { closestMatch } from "./ui/suggest";
+import { renderRuleExplain, listAllRules, getAllRuleNames } from "./linter/rule-docs";
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const pkg = JSON.parse(
@@ -124,7 +126,24 @@ cli
   .command("lint", "Validate the docs tree against the convention")
   .option("--strict", "Escalate warnings to errors")
   .option("--json", "Emit JSON output")
+  .option("--explain [rule]", "Explain a lint rule (or list all rules if no name given)")
   .action(async (opts) => {
+    if (opts.explain !== undefined) {
+      if (opts.explain === true || opts.explain === "") {
+        process.stdout.write(listAllRules() + "\n");
+        process.exit(0);
+      }
+      const explanation = renderRuleExplain(String(opts.explain));
+      if (!explanation) {
+        const suggestion = closestMatch(String(opts.explain), getAllRuleNames());
+        const hint = suggestion ? ` Did you mean ${c.cyan(suggestion)}?` : "";
+        console.error(`${CROSS} ${c.bold("Error:")} Unknown rule "${opts.explain}".${hint}`);
+        console.error(c.dim(`Run \`beacon lint --explain\` to list all rules.`));
+        process.exit(1);
+      }
+      process.stdout.write(explanation + "\n");
+      process.exit(0);
+    }
     const { runLintCommand } = await import("./commands/lint");
     const result = await runLintCommand({
       root: process.cwd(),
@@ -162,6 +181,35 @@ function renderHelp(): string {
   return lines.join("\n");
 }
 
+// Friendly help for `beacon enable` / `beacon disable` invoked without an addon name
+function renderEnableHelp(verb: "enable" | "disable"): string {
+  const lines: string[] = [];
+  lines.push(`${c.bold("Usage:")}`);
+  lines.push(`  beacon ${verb} ${c.cyan("<addon>")}`);
+  lines.push("");
+  lines.push(`${c.bold("Available add-on categories:")}`);
+  const descriptions: Record<string, string> = {
+    compliance: "regulatory docs (GDPR, SOC2, HIPAA, ...)",
+    business: "strategy, pricing, market positioning",
+    modules: "functional/business modules (monorepo workspaces)",
+    integrations: "third-party integration setup guides",
+    operations: "deploy guides, admin runbooks, troubleshooting",
+    roadmaps: "multi-sprint planning documents",
+  };
+  for (const addon of ADDON_CATEGORIES) {
+    lines.push(`  ${c.cyan(addon.padEnd(14))} ${c.dim(descriptions[addon] ?? "")}`);
+  }
+  lines.push("");
+  lines.push(`${c.bold("Examples:")}`);
+  lines.push(`  beacon ${verb} operations`);
+  lines.push(`  beacon ${verb} compliance`);
+  if (verb === "disable") {
+    lines.push("");
+    lines.push(c.dim("Pass --force to disable an add-on whose folder still contains documents."));
+  }
+  return lines.join("\n");
+}
+
 // Friendly help for `beacon new` invoked without args (instead of cac's "missing required arg" error)
 function renderNewHelp(): string {
   const lines: string[] = [];
@@ -195,9 +243,14 @@ function renderNewHelp(): string {
   return lines.join("\n");
 }
 
+// Known commands — keep in sync with the `cli.command(...)` definitions above.
+// Used for unknown-command typo correction (Levenshtein "did you mean?").
+const KNOWN_COMMANDS = ["init", "sync", "new", "archive", "enable", "disable", "lint"];
+
 // Intercept --help, no-args, and `new` without args BEFORE cli.parse()
 const args = process.argv.slice(2);
 const hasHelp = args.includes("--help") || args.includes("-h");
+const hasVersion = args.includes("--version") || args.includes("-v");
 const noArgs = args.length === 0;
 if (noArgs || (hasHelp && args.length === 1)) {
   console.log(renderHelp());
@@ -207,6 +260,30 @@ if (noArgs || (hasHelp && args.length === 1)) {
 if (args.length === 1 && args[0] === "new") {
   console.log(renderNewHelp());
   process.exit(0);
+}
+// `beacon enable` / `beacon disable` with no addon → show available add-ons
+if (args.length === 1 && (args[0] === "enable" || args[0] === "disable")) {
+  console.log(renderEnableHelp(args[0] as "enable" | "disable"));
+  process.exit(0);
+}
+// Unknown command → suggest closest match via Levenshtein distance.
+// Skip if the first arg looks like a flag, or matches a known command, or is a help/version invocation.
+const firstArg = args[0];
+if (
+  firstArg &&
+  !firstArg.startsWith("-") &&
+  !hasHelp &&
+  !hasVersion &&
+  !KNOWN_COMMANDS.includes(firstArg)
+) {
+  const suggestion = closestMatch(firstArg, KNOWN_COMMANDS);
+  console.error(`${CROSS} ${c.bold("Error:")} Unknown command "${firstArg}".`);
+  if (suggestion) {
+    console.error(c.dim(`  ${ARROW} Did you mean ${c.cyan(suggestion)}?`));
+  } else {
+    console.error(c.dim(`  ${ARROW} Run \`beacon --help\` to see available commands.`));
+  }
+  process.exit(1);
 }
 
 cli.help();

@@ -1,5 +1,15 @@
 # beacon-docs
 
+## 0.1.8
+
+### Patch Changes
+
+- Three UX improvements for the lint and CLI surface:
+
+  - **`beacon lint --explain <rule>`** — verbose explainer for any of the 11 lint rules (severity, why the rule exists, allowed patterns, example violations, how to fix). Run with no rule name to list all rules grouped by severity.
+  - **Typo correction for unknown commands and add-ons** — `beacon linnt` now suggests `lint`, `beacon enable opperations` now suggests `operations`. Uses Levenshtein distance with a max of 3 edits.
+  - **`beacon enable` / `beacon disable` no-args help** — invoking either command without an add-on now prints the list of available add-on categories with descriptions instead of cac's terse "missing required arg" error.
+
 ## 0.1.7
 
 ### Patch Changes

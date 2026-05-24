@@ -19,6 +19,7 @@ describe("beacon init (interactive)", () => {
     vi.doMock("@clack/prompts", () => ({
       intro: vi.fn(),
       outro: vi.fn(),
+      note: vi.fn(),
       select: vi.fn().mockResolvedValueOnce("library"),
       multiselect: vi
         .fn()
