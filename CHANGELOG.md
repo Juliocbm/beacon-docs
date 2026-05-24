@@ -1,5 +1,36 @@
 # beacon-docs
 
+## 0.1.6
+
+### Patch Changes
+
+- UX: the interactive `beacon init` wizard now shows a boxed note before the first prompt explaining what the wizard will do — so users know what to expect (and what gets touched in their repo) before answering questions.
+
+  The note covers:
+
+  - What the wizard will ask
+  - What files / folders will be created (docs/, AI rule files, package.json script)
+  - That `Ctrl+C` is safe — nothing is written until all choices are confirmed
+
+  ```
+  ┌  Beacon — initialize docs convention
+  │
+  ◇  This wizard will: ──────────────────────────────────────────────────────────╮
+  │                                                                              │
+  │  1. Ask about your project type and which doc categories to enable           │
+  │  2. Create a `docs/` folder structure in this directory                      │
+  │  3. Generate AI rule files (CLAUDE.md, AGENTS.md, etc.) at the project root  │
+  │  4. Add a `docs:lint` script to your package.json (if present)               │
+  │                                                                              │
+  │  Press Ctrl+C to abort. Nothing is written until you confirm all choices.    │
+  │                                                                              │
+  ├──────────────────────────────────────────────────────────────────────────────╯
+  │
+  ◆  Project type?
+  ```
+
+  The non-interactive path (`beacon init --yes ...`) is unchanged — the note only appears in the interactive wizard.
+
 ## 0.1.5
 
 ### Patch Changes

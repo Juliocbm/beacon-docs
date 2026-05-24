@@ -68,6 +68,16 @@ export async function runInit(options: InitOptions): Promise<BeaconConfig> {
 export async function runInitInteractive(opts: { root: string }): Promise<BeaconConfig> {
   p.intro("Beacon — initialize docs convention");
 
+  p.note(
+    `1. Ask about your project type and which doc categories to enable
+2. Create a \`docs/\` folder structure in this directory
+3. Generate AI rule files (CLAUDE.md, AGENTS.md, etc.) at the project root
+4. Add a \`docs:lint\` script to your package.json (if present)
+
+Press Ctrl+C to abort. Nothing is written until you confirm all choices.`,
+    "This wizard will:",
+  );
+
   const ctx = await detectContext(opts.root);
 
   const type = (await p.select({
