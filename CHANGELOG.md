@@ -1,5 +1,37 @@
 # beacon-docs
 
+## 0.1.5
+
+### Patch Changes
+
+- UX: the interactive wizard now shows a one-line description next to each category in the "Which categories to enable?" prompt, so new users can tell `reference` vs `architecture` vs `adr` apart without leaving the terminal.
+
+  Before:
+
+  ```
+  ■ reference
+  ■ architecture
+  ■ adr
+  ■ plans
+  ■ backlog
+  ■ evaluations
+  ```
+
+  After:
+
+  ```
+  ■ reference     Replicable technical patterns.
+  ■ architecture  System structure and layering decisions.
+  ■ adr           Architecture Decision Records.
+  ■ plans         Active work with TODOs.
+  ■ backlog       Future items waiting to be sprinted.
+  ■ evaluations   Date-prefixed audits and snapshots.
+  ```
+
+  When a category is also suggested by automatic project detection (e.g., `integrations` when `stripe` is in `package.json`), the hint becomes `<description> · suggested by detection` to preserve that signal.
+
+  Descriptions come from the existing `CATEGORY_DESCRIPTIONS` map in `src/core/category-descriptions.ts` — same source of truth used by the master README and convention.md generators, so the wizard, the master README, and the convention doc all stay consistent.
+
 ## 0.1.4
 
 ### Patch Changes

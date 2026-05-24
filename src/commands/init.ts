@@ -13,6 +13,7 @@ import { addDocsLintScript } from "../core/package-json";
 import type { ExistingFileAction } from "../core/existing-files";
 import * as p from "@clack/prompts";
 import { detectContext } from "../core/detect";
+import { CATEGORY_DESCRIPTIONS } from "../core/category-descriptions";
 
 export interface InitOptions {
   root: string;
@@ -87,11 +88,15 @@ export async function runInitInteractive(opts: { root: string }): Promise<Beacon
   }
 
   const defaults = defaultCategoriesFor(type);
-  const categoryOptions = [...CORE_CATEGORIES, ...ADDON_CATEGORIES].map((c) => ({
-    value: c,
-    label: c,
-    hint: ctx.suggestedAddons.includes(c as never) ? "suggested by detection" : undefined,
-  }));
+  const categoryOptions = [...CORE_CATEGORIES, ...ADDON_CATEGORIES].map((c) => {
+    const desc = CATEGORY_DESCRIPTIONS[c].short;
+    const suggested = ctx.suggestedAddons.includes(c as never);
+    return {
+      value: c,
+      label: c,
+      hint: suggested ? `${desc} · suggested by detection` : desc,
+    };
+  });
 
   const categories = (await p.multiselect({
     message: "Which categories to enable?",
