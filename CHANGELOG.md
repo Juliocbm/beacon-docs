@@ -1,5 +1,22 @@
 # beacon-docs
 
+## 0.2.0
+
+### Minor Changes
+
+- **`beacon doctor` — docs-tree health checks.**
+
+  A new command separate from `lint` that surfaces _soft_ health signals across four areas:
+
+  - **`stale-plans`** (activity) — flags plan files unmodified for 30+ days
+  - **`proposed-adrs`** (decisions) — flags ADRs with `status: proposed` stuck for 14+ days
+  - **`old-evaluations`** (snapshots) — flags evals 6+ months old where no newer eval refreshes the same topic
+  - **`backlog-balance`** (balance) — flags when plans count > 5 with empty backlog, OR plans:backlog ratio > 5:1
+
+  Output is grouped by area with file/folder glyphs and per-finding suggestions. Exit 0 by default (informational); `--strict` for CI gating; `--json` for tooling.
+
+  This is the v0.2.0 milestone planned in ADR-007. Lint stays focused on hard structural rules; doctor handles the "is this healthy?" judgment calls.
+
 ## 0.1.8
 
 ### Patch Changes

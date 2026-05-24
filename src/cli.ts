@@ -123,6 +123,22 @@ cli
   });
 
 cli
+  .command("doctor", "Surface docs-tree health signals (stale plans, proposed ADRs, etc.)")
+  .option("--strict", "Exit with code 1 if any findings exist")
+  .option("--json", "Emit JSON output")
+  .action(async (opts) => {
+    const { runDoctorCommand } = await import("./commands/doctor");
+    const result = await runDoctorCommand({
+      root: process.cwd(),
+      strict: !!opts.strict,
+      json: !!opts.json,
+    });
+    process.stdout.write(result.output);
+    if (!opts.json && !result.output.endsWith("\n")) process.stdout.write("\n");
+    process.exit(result.exitCode);
+  });
+
+cli
   .command("lint", "Validate the docs tree against the convention")
   .option("--strict", "Escalate warnings to errors")
   .option("--json", "Emit JSON output")
@@ -176,6 +192,8 @@ function renderHelp(): string {
   lines.push(`  ${c.dim("                         ↳ Run after editing convention.md, or if `lint`")}`);
   lines.push(`  ${c.dim("                           reports ai-files-sync (generated files drifted).")}`);
   lines.push(`  ${c.cyan("lint")}                   Validate the docs tree against the convention`);
+  lines.push(`  ${c.cyan("doctor")}                 Surface docs-tree health signals`);
+  lines.push(`  ${c.dim("                         ↳ Stale plans, proposed ADRs, old evals, backlog balance.")}`);
   lines.push("");
   lines.push(c.dim(`Run \`beacon <command> --help\` for command-specific options.`));
   return lines.join("\n");
@@ -245,7 +263,7 @@ function renderNewHelp(): string {
 
 // Known commands — keep in sync with the `cli.command(...)` definitions above.
 // Used for unknown-command typo correction (Levenshtein "did you mean?").
-const KNOWN_COMMANDS = ["init", "sync", "new", "archive", "enable", "disable", "lint"];
+const KNOWN_COMMANDS = ["init", "sync", "new", "archive", "enable", "disable", "lint", "doctor"];
 
 // Intercept --help, no-args, and `new` without args BEFORE cli.parse()
 const args = process.argv.slice(2);

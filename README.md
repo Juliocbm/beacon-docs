@@ -8,7 +8,7 @@
   <a href="https://www.npmjs.com/package/beacon-docs"><img src="https://img.shields.io/npm/dm/beacon-docs.svg?style=flat-square" alt="npm downloads"></a>
   <a href="https://github.com/Juliocbm/beacon-docs/blob/main/LICENSE"><img src="https://img.shields.io/npm/l/beacon-docs.svg?style=flat-square" alt="MIT License"></a>
   <img src="https://img.shields.io/node/v/beacon-docs.svg?style=flat-square" alt="Node version">
-  <img src="https://img.shields.io/badge/tests-147%20passing-brightgreen?style=flat-square" alt="147 tests passing">
+  <img src="https://img.shields.io/badge/tests-220%20passing-brightgreen?style=flat-square" alt="220 tests passing">
 </p>
 
 ---
@@ -204,6 +204,7 @@ Project type **suggests defaults**. The wizard pre-checks them, but every choice
 | `beacon enable <addon>` | Enable an add-on category (creates folder + README, re-syncs AI files) |
 | `beacon disable <addon>` | Disable an add-on category (`--force` if folder has content) |
 | `beacon lint` | Validate the docs tree (`--strict` to escalate warnings, `--json` for CI) |
+| `beacon doctor` | Surface health signals: stale plans, proposed-ADRs, old evals, backlog balance |
 
 ### `beacon new` examples
 
@@ -218,6 +219,21 @@ beacon new guide deploy --category=operations   # → docs/operations/deploy.gui
 ```
 
 Each command opens a doc with the right frontmatter skeleton — title, status, date, etc.
+
+### `beacon lint` vs `beacon doctor`
+
+Two different jobs:
+
+- **`beacon lint`** answers *"is the structure correct?"* — hard rules about file naming, folder placement, AI-file sync. Use in CI (fail PRs on violations).
+- **`beacon doctor`** answers *"is the docs tree healthy?"* — soft signals about activity, decisions, snapshots, balance. Run weekly or before releases.
+
+```bash
+beacon doctor                    # exit 0 even with findings (informational)
+beacon doctor --strict           # exit 1 if any findings exist (for CI gating)
+beacon doctor --json             # machine-readable for tooling
+```
+
+The 4 v0.2 checks are: `stale-plans` (>30 days), `proposed-adrs` (stuck >14 days), `old-evaluations` (>6 months, no refresh), `backlog-balance` (too many plans, no backlog).
 
 ---
 
@@ -348,7 +364,6 @@ If you want to see what your project's docs *could* look like, browse this repo.
 
 See [`docs/backlog/`](docs/backlog) for the full list. Highlights:
 
-- `beacon doctor` — health checks (stale plans, evals without review)
 - Plugin system for custom categories
 - Auto-migration from existing doc structures (Diátaxis, ad-hoc)
 - i18n of AI rule templates
@@ -367,7 +382,7 @@ The repo dogfoods its own convention, so contributing means:
 1. Open an issue describing the problem or feature.
 2. For non-trivial changes, propose an ADR in `docs/adr/` first.
 3. Code changes go in `src/`; add or update tests in `tests/`.
-4. Run `npm test` (147 tests must keep passing), `npm run typecheck`, `npm run build`.
+4. Run `npm test` (220 tests must keep passing), `npm run typecheck`, `npm run build`.
 5. Add a changeset (`npx changeset add`) describing your change.
 6. PR to `main`.
 
