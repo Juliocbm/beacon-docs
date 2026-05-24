@@ -6,6 +6,8 @@ import { runInit, runInitInteractive } from "./commands/init";
 import type { AgentId } from "./core/config";
 import type { ProjectType } from "./core/project-types";
 import type { ExistingFileAction } from "./core/existing-files";
+import { renderLogo } from "./ui/logo";
+import { c } from "./ui/colors";
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const pkg = JSON.parse(
@@ -115,6 +117,39 @@ cli
     if (!opts.json && !result.output.endsWith("\n")) process.stdout.write("\n");
     process.exit(result.exitCode);
   });
+
+// Build a custom help string with groups
+function renderHelp(): string {
+  const lines: string[] = [];
+  lines.push(renderLogo(pkg.version));
+  lines.push(`${c.bold("Usage:")}`);
+  lines.push(`  beacon ${c.cyan("<command>")} [options]`);
+  lines.push("");
+  lines.push(`${c.bold("Setup:")}`);
+  lines.push(`  ${c.cyan("init")}                   Initialize Beacon docs convention in this project`);
+  lines.push("");
+  lines.push(`${c.bold("Lifecycle:")}`);
+  lines.push(`  ${c.cyan("new <type> <slug>")}      Create a new doc with correct location and naming`);
+  lines.push(`  ${c.cyan("archive <type> <slug>")}  Move a completed plan or roadmap to _archive/`);
+  lines.push(`  ${c.cyan("enable <addon>")}         Enable an add-on category`);
+  lines.push(`  ${c.cyan("disable <addon>")}        Disable an add-on category`);
+  lines.push("");
+  lines.push(`${c.bold("Validation:")}`);
+  lines.push(`  ${c.cyan("sync")}                   Regenerate AI rule files from docs/_meta/convention.md`);
+  lines.push(`  ${c.cyan("lint")}                   Validate the docs tree against the convention`);
+  lines.push("");
+  lines.push(c.dim(`Run \`beacon <command> --help\` for command-specific options.`));
+  return lines.join("\n");
+}
+
+// Intercept --help and no-args BEFORE cli.parse()
+const args = process.argv.slice(2);
+const hasHelp = args.includes("--help") || args.includes("-h");
+const noArgs = args.length === 0;
+if (noArgs || (hasHelp && args.length === 1)) {
+  console.log(renderHelp());
+  process.exit(0);
+}
 
 cli.help();
 cli.version(pkg.version);
