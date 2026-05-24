@@ -40,25 +40,35 @@ Design rationale: [ADR-012](../adr/ADR-012-claude-code-plugin-design.md).
 
 The skill **delegates**, does not duplicate. When the user says "create an ADR for X," the skill runs `bash: beacon new adr <slug>` via Claude's Bash tool — not a hand-written file.
 
-## File structure
+## File structure (revised after T1)
 
 ```
-beacon-docs/                      ← existing repo
-└── claude-plugin/                ← NEW subfolder
-    ├── README.md                 ← user-facing docs for the plugin
-    ├── plugin.json               ← Claude Code plugin manifest (format TBD in T1)
-    ├── skills/
-    │   └── beacon-workflow/
-    │       └── SKILL.md          ← main skill (loaded when beacon.config.json detected)
-    └── commands/
-        ├── beacon-init.md
-        ├── beacon-new.md
-        ├── beacon-doctor.md
-        ├── beacon-explain.md
-        └── beacon-archive.md
+beacon-docs/                          ← existing repo
+└── claude-plugin/                    ← NEW subfolder
+    ├── README.md                     ← user-facing docs for the plugin
+    ├── .claude-plugin/
+    │   └── plugin.json               ← Claude Code plugin manifest
+    └── skills/                       ← skills only — no commands/ folder
+        ├── beacon-workflow/
+        │   └── SKILL.md              ← main always-available skill
+        ├── beacon-init/
+        │   └── SKILL.md              ← /beacon:beacon-init
+        ├── beacon-new/
+        │   └── SKILL.md              ← /beacon:beacon-new <description>
+        ├── beacon-doctor/
+        │   └── SKILL.md              ← /beacon:beacon-doctor
+        ├── beacon-explain/
+        │   └── SKILL.md              ← /beacon:beacon-explain <term>
+        └── beacon-archive/
+            └── SKILL.md              ← /beacon:beacon-archive
 ```
 
-Not distributed via `npm publish`. Distributed via Claude Code's plugin mechanism (exact mechanics validated in T1).
+Key differences from the original (pre-T1) proposal:
+- Manifest lives in `.claude-plugin/plugin.json` (not `plugin.json` at the plugin root).
+- **No `commands/` folder** — Claude Code unified skills and commands. The modern approach is "skills only"; flat `.md` commands in `commands/` are explicitly legacy. What we proposed as 5 slash commands become 5 invocable skills (each in its own folder with a `SKILL.md`).
+- Skills are FOLDERS, not files. The folder name becomes the invocation suffix: `skills/beacon-doctor/SKILL.md` → `/beacon:beacon-doctor`.
+
+Not distributed via `npm publish`. Distribution mechanics covered in the appendix and `Plan revisions` section.
 
 ## Scope
 
@@ -132,17 +142,20 @@ The skill detects Beacon absence at startup and degrades gracefully. This lets n
 
 ## TODOs
 
-### T1 — Research Claude Code plugin format
-- [ ] Locate official Claude Code plugin authoring docs (WebSearch + claude-code-guide agent).
-- [ ] Identify required `plugin.json` schema fields.
-- [ ] Confirm slash command file format and discovery mechanism.
-- [ ] Confirm skill loading rules (auto-load triggers, naming conventions, frontmatter requirements).
-- [ ] Document findings in this plan as a `Plugin format reference` appendix before continuing.
+### T1 — Research Claude Code plugin format ✅ DONE 2026-05-24
+- [x] Locate official Claude Code plugin authoring docs (WebSearch + claude-code-guide agent).
+- [x] Identify required `plugin.json` schema fields.
+- [x] Confirm slash command file format and discovery mechanism.
+- [x] Confirm skill loading rules (auto-load triggers, naming conventions, frontmatter requirements).
+- [x] Document findings in this plan as a `Plugin format reference` appendix before continuing.
+
+**Findings summary:** See [appendix](#appendix-plugin-format-reference) at the end of this plan. Three findings materially change the original design and require an ADR addendum or revision (recorded below in `Plan revisions after T1`).
 
 ### T2 — Scaffold `claude-plugin/` folder structure
 - [ ] Create `claude-plugin/` at repo root.
-- [ ] Create `plugin.json` with manifest fields (name, version, description, skills, commands).
-- [ ] Create empty `skills/beacon-workflow/SKILL.md` and `commands/*.md` placeholders.
+- [ ] Create `.claude-plugin/plugin.json` with manifest fields (`name: "beacon"`, `version: "0.1.0"`, `description`, `author`, `homepage`, `repository`, `license: "MIT"`, `keywords: ["beacon-docs", "documentation", "skills"]`).
+- [ ] Create empty `skills/beacon-workflow/SKILL.md` placeholder.
+- [ ] Create empty `skills/{beacon-init,beacon-new,beacon-doctor,beacon-explain,beacon-archive}/SKILL.md` placeholders.
 - [ ] Create `claude-plugin/README.md` with install/usage docs scoped to the plugin.
 
 ### T3 — Write the main skill (`beacon-workflow`)
@@ -150,12 +163,15 @@ The skill detects Beacon absence at startup and degrades gracefully. This lets n
 - [ ] Body sections: Detection logic, Conversational triggers, Lifecycle reminders, Advisory mode.
 - [ ] Cross-reference [docs/_meta/convention.md](../_meta/convention.md) so the skill stays consistent with the convention source-of-truth.
 
-### T4 — Write the 5 slash commands
-- [ ] `/beacon-init` — repo inspection logic + `beacon init` invocation.
-- [ ] `/beacon-new` — natural language → command parsing. Cover the 11 doc types.
-- [ ] `/beacon-doctor` — `beacon doctor --json` → parse findings → propose actions per finding.
-- [ ] `/beacon-explain` — call `beacon lint --explain <name>` first, fall through to `beacon doctor --explain <name>`.
-- [ ] `/beacon-archive` — list `docs/plans/*.plan.md`, prompt user to select, call `beacon archive plan <slug>`.
+### T4 — Write the 5 invocable skills (`skills/beacon-*/SKILL.md`)
+
+Note: these are SKILLS, not legacy `commands/*.md`. Each lives in its own folder; invocation becomes `/beacon:beacon-<action>`.
+
+- [ ] `beacon-init` — repo inspection logic + `beacon init` invocation.
+- [ ] `beacon-new` — natural language → command parsing. Cover the 11 doc types. Use `arguments: [description]` frontmatter and `$ARGUMENTS` substitution.
+- [ ] `beacon-doctor` — call `beacon doctor --json` via Bash, parse findings, propose actions per finding. Declare `allowed-tools: ["Bash"]` in frontmatter to skip permission prompts.
+- [ ] `beacon-explain` — call `beacon lint --explain <name>` first, fall through to `beacon doctor --explain <name>`. Arguments: `[term]`.
+- [ ] `beacon-archive` — list `docs/plans/*.plan.md` via Bash, prompt user to select, call `beacon archive plan <slug>`.
 
 ### T5 — `claude-plugin/README.md`
 - [ ] What this plugin is, what it does, prerequisites (Beacon optional).
@@ -200,3 +216,126 @@ These are not blockers for the plan — they're the explicit research deliverabl
 - **Plugin format moves.** Claude Code is young; plugin format may change. Mitigation: keep the plugin small and easy to refactor; don't over-invest before format stabilizes.
 - **CLI ↔ skill drift.** A new Beacon CLI flag may break a slash command. Mitigation: same-repo PRs can update both atomically; consider a smoke test that pipes `beacon --help` through the skill's expected commands.
 - **Adoption uncertainty.** This is a second product surface with zero current adoption. Don't over-invest. MVP first; iterate based on real usage.
+- **Subfolder distribution is not native** *(new — surfaced in T1)*. The default `claude plugin install <name>` does not accept a repo subfolder path. We have to either: (a) use `--plugin-dir` for local dev install only, (b) create a custom marketplace manifest that uses `git-subdir` source type, or (c) eventually split the plugin into its own repo for marketplace submission. See `Plan revisions after T1` below.
+
+## Plan revisions after T1
+
+T1 research surfaced three findings that materially change the original design. Captured here as a delta so the original ADR-012 and pre-T1 plan stay readable.
+
+### Revision 1 — Skills replace slash commands
+
+**Original assumption:** plugin would have 1 skill + 4-5 slash commands in `commands/*.md`.
+
+**Reality:** Claude Code unified skills and commands. The modern approach is "skills only"; flat `commands/*.md` files are legacy. Each "slash command" becomes a skill in its own folder. Skills are invoked via `/plugin-name:skill-name` (e.g., `/beacon:beacon-doctor`).
+
+**Impact on plan:**
+- File structure rewritten (above): no `commands/` folder; 6 skills total (1 always-available + 5 invocable).
+- T4 task renamed from "Write 5 slash commands" to "Write 5 invocable skills."
+- Each invocable skill uses `arguments: [...]` frontmatter and `$ARGUMENTS` / `$0` substitution where needed.
+- No effort delta. Same end-user UX (`/beacon:beacon-doctor` works the same as a `/beacon-doctor` slash command would have).
+
+### Revision 2 — No file-presence auto-load triggers
+
+**Original assumption:** the main `beacon-workflow` skill would auto-load when `docs/_meta/beacon.config.json` is detected in cwd.
+
+**Reality:** Claude Code skills auto-load via the model's contextual judgment based on the `description` frontmatter field, NOT via file-presence patterns. There is no configuration like "auto-load when file X exists."
+
+**Impact on plan:**
+- The main skill's `description` must be specific enough that Claude reaches for it when the user mentions Beacon-relevant tasks. Example: `"Use whenever the project has beacon-docs installed (look for docs/_meta/beacon.config.json) or when the user asks to create documentation that should follow a convention."`
+- We instruct Claude in the skill body to verify Beacon presence by checking for the config file as its first step, then degrade to "advisory mode" if absent.
+- This is a slight UX downgrade from the original aspiration (less deterministic auto-loading) but workable.
+
+### Revision 3 — Subfolder distribution requires extra work
+
+**Original assumption:** `claude plugin install user/repo` or similar would handle the `claude-plugin/` subfolder transparently.
+
+**Reality:** The standard `claude plugin install <name>` command expects marketplace plugins. For a plugin living in a repo subfolder, we have three viable paths:
+
+| Path | What it requires | When to use |
+|---|---|---|
+| **A. Local dev install** | `claude plugin install --plugin-dir ./claude-plugin/` | Day 1 — for our own testing + early adopters who clone the repo |
+| **B. Custom marketplace** | Create `claude-plugin/marketplace.json` referencing the plugin via `git-subdir` source type. Users add the marketplace, then install. | Once we want broader distribution without splitting the repo |
+| **C. Split to standalone repo** | Move `claude-plugin/` to its own GitHub repo, submit to community marketplace | When we're confident the plugin has traction and want frictionless distribution |
+
+**Impact on plan:**
+- T7 (validation) uses path A — local install via `--plugin-dir`.
+- T8 (release prep) initially uses path A and documents path B as a follow-up. Path C is the deferred "split repo" trigger from ADR-012.
+- README for the plugin should document path A (clone + local install) as the supported MVP install path.
+
+ADR-012's "splits to separate repo only when registry requires it" trigger is now closer than expected: if we ever want to be in the official community marketplace, we'll need path C.
+
+---
+
+## Appendix — Plugin format reference
+
+Compiled from official Claude Code documentation (last verified 2026-05-24). Sources cited inline.
+
+### Manifest
+
+**Location:** `<plugin-root>/.claude-plugin/plugin.json`
+
+**Required fields:** only `name`.
+
+**Commonly-used optional fields:** `displayName`, `description`, `version` (SemVer string; falls back to git SHA if omitted), `author` (object with `name`, `email`, `url`), `homepage`, `repository`, `license`, `keywords` (array).
+
+**JSON schema:** `https://json.schemastore.org/claude-code-plugin-manifest.json`
+
+**Sources:**
+- https://code.claude.com/docs/en/plugins#create-your-first-plugin
+- https://code.claude.com/docs/en/plugins-reference#metadata-fields
+
+### Skills (the unified primitive)
+
+**Location:** `<plugin-root>/skills/<skill-name>/SKILL.md`. Skills are folders, not files. Folder name becomes the invocation suffix.
+
+**Frontmatter fields:**
+- `description` *(recommended)* — what the skill does. Drives auto-invocation.
+- `disable-model-invocation: true` — prevents Claude from auto-invoking.
+- `user-invocable: false` — hides from the `/` menu.
+- `allowed-tools: ["Bash", "Read", ...]` — grants tools without per-use approval.
+- `arguments: [name1, name2, ...]` — declares positional arguments accessible as `$0`, `$1`, or `$ARGUMENTS`.
+
+**Auto-load behavior:** Claude reads all skill descriptions, decides contextually which skill matches the user's task. NO file-presence triggers. Users can always invoke any skill with `/plugin-name:skill-name`.
+
+**Bash & dynamic context:** Skills can embed bash via `` !`command` `` for inline output or ` ```! ` blocks. The `allowed-tools` frontmatter pre-authorizes specific tools.
+
+**Sources:**
+- https://code.claude.com/docs/en/skills
+- https://code.claude.com/docs/en/skills#frontmatter-reference
+- https://code.claude.com/docs/en/skills#inject-dynamic-context
+
+### Slash commands (legacy)
+
+Flat `<plugin-root>/commands/<name>.md` files still work but are explicitly LEGACY. The modern recommendation is to use skills for everything. We follow the modern approach — no `commands/` folder in our plugin.
+
+### Distribution
+
+**Install command:** `claude plugin install <name> [-s user|project|local]`
+
+**Accepted input:** plugin name from a registered marketplace, or `name@marketplace-name`. The `--plugin-dir` flag (for dev) takes a local filesystem path.
+
+**Subfolder distribution:** not directly supported by the standard install command. Workarounds: `--plugin-dir` for local dev, custom marketplace JSON with `git-subdir` source type for production, or split to a standalone repo.
+
+**Marketplaces:**
+- `claude-plugins-official` — Anthropic-curated, auto-available.
+- `claude-plugins-community` — community-submitted, submit via https://claude.ai/settings/plugins/submit
+
+**Install path:** `~/.claude/plugins/cache/<plugin-id>/`
+
+**Sources:**
+- https://code.claude.com/docs/en/plugins-reference#plugin-install
+- https://code.claude.com/docs/en/plugins#submit-your-plugin-to-the-community-marketplace
+- https://code.claude.com/docs/en/plugins-reference#version-management
+
+### Versioning
+
+`version` field in `plugin.json` (SemVer). Falls back to git commit SHA if omitted (every commit treated as a new version). Updates fire on `/plugin update <name>` or auto-update. No formal compatibility declarations between plugin version and Claude Code version — recommend documenting minimum Claude Code version in the plugin README.
+
+### Reference examples
+
+Anthropic ships 15+ official sample plugins at https://github.com/anthropics/claude-code/tree/main/plugins. Notable for our use case:
+
+- `plugin-dev` — plugin development toolkit. Likely the best reference for "how to structure a plugin with skills."
+- `code-review` — automated PR reviews. Pattern reference for a skill that runs CLI tools.
+
+No ready-made starter for "1 plugin with multiple invocable skills" specifically, but the structure is straightforward enough to assemble from the references above.
