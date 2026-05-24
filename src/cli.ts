@@ -15,6 +15,21 @@ const pkg = JSON.parse(
   readFileSync(path.join(here, "..", "package.json"), "utf8"),
 ) as { version: string };
 
+// Global error handler: turn any uncaught error into a clean colored
+// `✗ Error: <message>` line and exit 1, instead of letting Node print a
+// stack trace. Set BEACON_DEBUG=1 to also print the stack for debugging.
+function handleCliError(err: unknown): never {
+  const message = err instanceof Error ? err.message : String(err);
+  console.error(`${CROSS} ${c.bold("Error:")} ${message}`);
+  if (process.env.BEACON_DEBUG && err instanceof Error && err.stack) {
+    console.error(c.dim(err.stack));
+  }
+  process.exit(1);
+}
+
+process.on("unhandledRejection", handleCliError);
+process.on("uncaughtException", handleCliError);
+
 const cli = cac("beacon");
 
 cli

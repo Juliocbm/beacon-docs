@@ -1,5 +1,33 @@
 # beacon-docs
 
+## 0.1.4
+
+### Patch Changes
+
+- Fix: user-facing errors from CLI commands now print as clean colored messages instead of full Node.js stack traces.
+
+  Before:
+
+  ```
+  file:///.../dist/cli.js:669
+        throw new Error(
+              ^
+  Error: Document has unchecked TODOs. Re-run with --force to archive anyway.
+      at runArchive (.../dist/cli.js:669:13)
+      at async CAC.<anonymous> (.../dist/cli.js:1604:18)
+  Node.js v22.19.0
+  ```
+
+  After:
+
+  ```
+  ✗ Error: Document has unchecked TODOs. Re-run with --force to archive anyway.
+  ```
+
+  Affects all commands (`archive`, `new`, `enable`, `disable`, etc.) — any expected user-facing error now formats consistently. Exit code remains 1.
+
+  For debugging, set `BEACON_DEBUG=1` to also print the stack trace below the clean error line.
+
 ## 0.1.3
 
 ### Patch Changes
