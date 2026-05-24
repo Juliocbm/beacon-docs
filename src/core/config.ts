@@ -4,12 +4,30 @@ import type { ProjectType, Category } from "./project-types";
 
 export type AgentId = "claude" | "cursor" | "codex" | "gemini";
 
+/**
+ * Per-project tuning for `beacon doctor` thresholds. All fields optional —
+ * unset fields fall back to the defaults in `src/doctor/defaults.ts`.
+ */
+export interface DoctorThresholds {
+  stalePlanDays?: number;
+  proposedAdrDays?: number;
+  oldEvalMonths?: number;
+  orphanReadmeDays?: number;
+  backlogMinPlans?: number;
+  backlogPlansPerItem?: number;
+}
+
+export interface DoctorConfig {
+  thresholds?: DoctorThresholds;
+}
+
 export interface BeaconConfig {
   version: "1.0";
   projectType: ProjectType;
   categories: Category[];
   agents: AgentId[];
   language: string;
+  doctor?: DoctorConfig;
 }
 
 export function configPath(projectRoot: string): string {

@@ -8,7 +8,7 @@
   <a href="https://www.npmjs.com/package/beacon-docs"><img src="https://img.shields.io/npm/dm/beacon-docs.svg?style=flat-square" alt="npm downloads"></a>
   <a href="https://github.com/Juliocbm/beacon-docs/blob/main/LICENSE"><img src="https://img.shields.io/npm/l/beacon-docs.svg?style=flat-square" alt="MIT License"></a>
   <img src="https://img.shields.io/node/v/beacon-docs.svg?style=flat-square" alt="Node version">
-  <img src="https://img.shields.io/badge/tests-255%20passing-brightgreen?style=flat-square" alt="255 tests passing">
+  <img src="https://img.shields.io/badge/tests-271%20passing-brightgreen?style=flat-square" alt="271 tests passing">
 </p>
 
 ---
@@ -206,6 +206,7 @@ Project type **suggests defaults**. The wizard pre-checks them, but every choice
 | `beacon lint` | Validate the docs tree (`--strict` to escalate warnings, `--json` for CI) |
 | `beacon doctor` | Surface health signals: stale plans, proposed-ADRs, old evals, backlog balance |
 | `beacon completion <shell>` | Print a shell completion script (`bash`, `zsh`, `fish`) for TAB-completion |
+| `beacon about` | Print version, install path, project config, and AI-file status (diagnostics) |
 
 ### `beacon new` examples
 
@@ -236,7 +237,26 @@ beacon doctor --explain          # list all checks grouped by area
 beacon doctor --explain <check>  # verbose docs (why it exists, triggers, fix)
 ```
 
-The 4 v0.2 checks are: `stale-plans` (>30 days), `proposed-adrs` (stuck >14 days), `old-evaluations` (>6 months, no refresh), `backlog-balance` (too many plans, no backlog). The same `--explain` flag exists on `beacon lint`.
+The 5 checks are: `stale-plans` (>30 days), `proposed-adrs` (stuck >14 days), `old-evaluations` (>6 months, no refresh), `orphan-readmes` (add-on enabled >30 days ago but folder still empty), `backlog-balance` (too many plans, no backlog). The same `--explain` flag exists on `beacon lint`.
+
+**Tuning thresholds.** Every threshold is configurable per-project. Add a `doctor.thresholds` section to `docs/_meta/beacon.config.json`:
+
+```json
+{
+  "doctor": {
+    "thresholds": {
+      "stalePlanDays": 60,
+      "proposedAdrDays": 21,
+      "oldEvalMonths": 12,
+      "orphanReadmeDays": 45,
+      "backlogMinPlans": 10,
+      "backlogPlansPerItem": 8
+    }
+  }
+}
+```
+
+All fields are optional; unset ones use the defaults. `beacon about` shows which thresholds are overridden vs default. Design rationale: [ADR-010](docs/adr/ADR-010-configurable-doctor-thresholds.md).
 
 ---
 
@@ -430,7 +450,7 @@ The repo dogfoods its own convention, so contributing means:
 1. Open an issue describing the problem or feature.
 2. For non-trivial changes, propose an ADR in `docs/adr/` first.
 3. Code changes go in `src/`; add or update tests in `tests/`.
-4. Run `npm test` (255 tests must keep passing), `npm run typecheck`, `npm run build`.
+4. Run `npm test` (271 tests must keep passing), `npm run typecheck`, `npm run build`.
 5. Add a changeset (`npx changeset add`) describing your change.
 6. PR to `main`.
 

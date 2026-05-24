@@ -1,5 +1,15 @@
 # beacon-docs
 
+## 0.3.1
+
+### Patch Changes
+
+- Three additions to the doctor + diagnostics surface:
+
+  - **New doctor check: `orphan-readmes`** (balance area). Flags add-on category folders that were enabled with `beacon enable <addon>` but never received any actual docs — only the auto-generated README still sits there ≥ 30 days later. Core categories (reference/adr/plans/...) are intentionally exempt.
+  - **Configurable doctor thresholds.** Every threshold (`stalePlanDays`, `proposedAdrDays`, `oldEvalMonths`, `orphanReadmeDays`, `backlogMinPlans`, `backlogPlansPerItem`) is now overridable per-project via `doctor.thresholds` in `docs/_meta/beacon.config.json`. All fields optional; unset ones use defaults. Invalid values (negative, NaN, non-number) are silently ignored. Design rationale in ADR-010.
+  - **New command: `beacon about`.** Diagnostic output: version, install path, Node version, platform, project config (type, categories, agents, language), threshold overrides vs defaults, and whether each expected AI rule file exists on disk.
+
 ## 0.3.0
 
 ### Minor Changes

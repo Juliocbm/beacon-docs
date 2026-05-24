@@ -1,5 +1,6 @@
 import { readConfig } from "../core/config";
 import { walkDocs } from "../linter/walker";
+import { resolveThresholds } from "./defaults";
 import type { Area, Check, CheckContext, Finding } from "./types";
 
 export interface RunDoctorResult {
@@ -19,6 +20,7 @@ export async function runDoctor(opts: {
     config,
     files,
     now: opts.now ?? Date.now(),
+    thresholds: resolveThresholds(config.doctor?.thresholds),
   };
 
   const findings: Finding[] = [];

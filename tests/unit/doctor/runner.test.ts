@@ -74,6 +74,54 @@ describe("doctor/runner", () => {
     expect(seen).toBe(frozen);
   });
 
+  it("resolves thresholds from config.doctor.thresholds (overrides win)", async () => {
+    await fs.writeJson(path.join(tmp, "docs", "_meta", "beacon.config.json"), {
+      version: "1.0",
+      projectType: "library",
+      categories: ["reference", "architecture", "adr", "plans", "backlog", "evaluations"],
+      agents: ["claude"],
+      language: "en",
+      doctor: { thresholds: { stalePlanDays: 60, proposedAdrDays: 21 } },
+    });
+    let seen: { stalePlanDays?: number; proposedAdrDays?: number; oldEvalMonths?: number } | undefined;
+    const probe: Check = {
+      name: "threshold-probe",
+      area: "activity",
+      check: (ctx) => {
+        seen = ctx.thresholds;
+        return [];
+      },
+    };
+    await runDoctor({ root: tmp, checks: [probe] });
+    expect(seen?.stalePlanDays).toBe(60);
+    expect(seen?.proposedAdrDays).toBe(21);
+    // Unset field falls back to default.
+    expect(seen?.oldEvalMonths).toBe(6);
+  });
+
+  it("ignores invalid threshold overrides (negative, NaN, non-number)", async () => {
+    await fs.writeJson(path.join(tmp, "docs", "_meta", "beacon.config.json"), {
+      version: "1.0",
+      projectType: "library",
+      categories: ["reference", "architecture", "adr", "plans", "backlog", "evaluations"],
+      agents: ["claude"],
+      language: "en",
+      doctor: { thresholds: { stalePlanDays: -5, proposedAdrDays: "bogus" as unknown as number } },
+    });
+    let seen: { stalePlanDays?: number; proposedAdrDays?: number } | undefined;
+    const probe: Check = {
+      name: "threshold-probe",
+      area: "activity",
+      check: (ctx) => {
+        seen = ctx.thresholds;
+        return [];
+      },
+    };
+    await runDoctor({ root: tmp, checks: [probe] });
+    expect(seen?.stalePlanDays).toBe(30); // default
+    expect(seen?.proposedAdrDays).toBe(14); // default
+  });
+
   it("awaits async checks", async () => {
     const asyncCheck: Check = {
       name: "async-probe",

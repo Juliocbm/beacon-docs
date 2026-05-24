@@ -30,7 +30,10 @@ describe("completion/bash", () => {
   });
 
   it("offers doctor check names for `doctor --explain`", () => {
-    expect(script).toMatch(/doctor\)[\s\S]*?stale-plans proposed-adrs old-evaluations backlog-balance/);
+    expect(script).toMatch(/doctor\)[\s\S]*?stale-plans/);
+    expect(script).toMatch(/doctor\)[\s\S]*?proposed-adrs/);
+    expect(script).toMatch(/doctor\)[\s\S]*?orphan-readmes/);
+    expect(script).toMatch(/doctor\)[\s\S]*?backlog-balance/);
   });
 
   it("dynamically completes plan slugs for `archive plan <slug>`", () => {

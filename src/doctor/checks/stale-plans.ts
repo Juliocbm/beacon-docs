@@ -1,7 +1,6 @@
 import fs from "fs-extra";
 import type { Check, Finding } from "../types";
 
-const STALE_PLAN_DAYS = 30;
 const MS_PER_DAY = 24 * 60 * 60 * 1000;
 
 export const check: Check = {
@@ -19,7 +18,7 @@ export const check: Check = {
     for (const file of planFiles) {
       const stat = await fs.stat(file.absolutePath);
       const ageDays = Math.floor((ctx.now - stat.mtimeMs) / MS_PER_DAY);
-      if (ageDays >= STALE_PLAN_DAYS) {
+      if (ageDays >= ctx.thresholds.stalePlanDays) {
         findings.push({
           area: "activity",
           check: "stale-plans",

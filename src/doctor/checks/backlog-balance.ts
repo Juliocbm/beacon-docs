@@ -1,8 +1,5 @@
 import type { Check, Finding } from "../types";
 
-const MIN_PLANS_TO_CONSIDER = 5;
-const MAX_PLANS_PER_BACKLOG_ITEM = 5;
-
 function countActive(files: { category: string; isReadme: boolean; isArchived: boolean }[], category: string): number {
   return files.filter((f) => f.category === category && !f.isReadme && !f.isArchived).length;
 }
@@ -14,10 +11,10 @@ export const check: Check = {
     const plans = countActive(ctx.files, "plans");
     const backlog = countActive(ctx.files, "backlog");
 
-    if (plans <= MIN_PLANS_TO_CONSIDER) return [];
+    if (plans <= ctx.thresholds.backlogMinPlans) return [];
 
     const unbalanced =
-      backlog === 0 || plans / backlog > MAX_PLANS_PER_BACKLOG_ITEM;
+      backlog === 0 || plans / backlog > ctx.thresholds.backlogPlansPerItem;
 
     if (!unbalanced) return [];
 

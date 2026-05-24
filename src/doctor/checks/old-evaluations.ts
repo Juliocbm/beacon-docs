@@ -1,6 +1,5 @@
 import type { Check, Finding } from "../types";
 
-const OLD_EVAL_MONTHS = 6;
 const MS_PER_DAY = 24 * 60 * 60 * 1000;
 
 const DATE_PREFIX = /^(\d{4})-(\d{2})-(\d{2})-(.+)\.eval\.md$/;
@@ -37,7 +36,7 @@ export const check: Check = {
       .map((f) => ({ file: f, parsed: parseEval(f) }))
       .filter((e): e is { file: typeof e.file; parsed: ParsedEval } => e.parsed !== null);
 
-    const thresholdMs = OLD_EVAL_MONTHS * 30 * MS_PER_DAY;
+    const thresholdMs = ctx.thresholds.oldEvalMonths * 30 * MS_PER_DAY;
 
     for (const { parsed } of evals) {
       const ageMs = ctx.now - parsed.timestamp;

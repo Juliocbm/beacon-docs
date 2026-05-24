@@ -90,6 +90,35 @@ const CHECK_DOCS: Record<string, CheckDoc> = {
     ],
   },
 
+  "orphan-readmes": {
+    name: "orphan-readmes",
+    area: "balance",
+    summary:
+      "Add-on category folders enabled in config but containing only their auto-generated README.",
+    why:
+      "When you enable an add-on with `beacon enable <addon>`, Beacon scaffolds the folder and a " +
+      "README. If 30+ days later the folder still has nothing but that README, you probably either " +
+      "(a) opted in speculatively and never used it, or (b) the AI agent skipped using it. Either way " +
+      "it's noise — disable the add-on or start using it. Core categories (reference/adr/plans/...) " +
+      "are intentionally exempt: they're expected even when empty.",
+    triggers: [
+      "Category is an add-on (compliance, business, modules, integrations, operations, roadmaps)",
+      "Category is listed in `categories` in `beacon.config.json`",
+      "Folder contains only README.md (no other docs; `_archive/` alone doesn't count as content)",
+      "README.md mtime is ≥ 30 days ago (threshold: `orphanReadmeDays`)",
+    ],
+    example: {
+      observation: "Add-on enabled 45 days ago but folder still only contains README.md.",
+      suggestion:
+        "If you don't need this category, run `beacon disable <addon>`. Otherwise add at least one doc (`beacon new <type> <slug>`).",
+    },
+    notFlaggedWhen: [
+      "The add-on was enabled less than 30 days ago (give it time to be used)",
+      "The folder contains any non-README doc",
+      "The category is a core category (reference, architecture, adr, plans, backlog, evaluations)",
+    ],
+  },
+
   "backlog-balance": {
     name: "backlog-balance",
     area: "balance",

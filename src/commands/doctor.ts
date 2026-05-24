@@ -4,8 +4,9 @@ import { check as stalePlans } from "../doctor/checks/stale-plans";
 import { check as proposedAdrs } from "../doctor/checks/proposed-adrs";
 import { check as oldEvaluations } from "../doctor/checks/old-evaluations";
 import { check as backlogBalance } from "../doctor/checks/backlog-balance";
+import { check as orphanReadmes } from "../doctor/checks/orphan-readmes";
 
-const CHECKS = [stalePlans, proposedAdrs, oldEvaluations, backlogBalance];
+const CHECKS = [stalePlans, proposedAdrs, oldEvaluations, backlogBalance, orphanReadmes];
 
 export interface DoctorCommandResult {
   exitCode: 0 | 1;

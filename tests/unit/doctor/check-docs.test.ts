@@ -10,12 +10,13 @@ beforeEach(() => {
 });
 
 describe("doctor/check-docs.getAllCheckNames", () => {
-  it("returns the 4 v0.2 check names", () => {
+  it("returns the current check names", () => {
     const names = getAllCheckNames();
     expect(names).toEqual([
       "stale-plans",
       "proposed-adrs",
       "old-evaluations",
+      "orphan-readmes",
       "backlog-balance",
     ]);
   });

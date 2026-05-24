@@ -130,6 +130,11 @@ export const COMMAND_SCHEMA: readonly CommandSchema[] = [
     positionalValues: SHELLS,
     flags: [],
   },
+  {
+    name: "about",
+    description: "Show version, install location, project config, AI-file status",
+    flags: [],
+  },
 ];
 
 export const TOP_LEVEL_COMMANDS: readonly string[] = COMMAND_SCHEMA.map((c) => c.name);

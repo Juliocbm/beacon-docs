@@ -4,6 +4,7 @@ import path from "node:path";
 import os from "node:os";
 import { check as oldEvals } from "../../../../src/doctor/checks/old-evaluations";
 import { walkDocs } from "../../../../src/linter/walker";
+import { DEFAULT_THRESHOLDS } from "../../../../src/doctor/defaults";
 import type { CheckContext } from "../../../../src/doctor/types";
 
 let tmp: string;
@@ -22,6 +23,7 @@ async function makeContext(root: string): Promise<CheckContext> {
     },
     files,
     now: NOW,
+    thresholds: DEFAULT_THRESHOLDS,
   };
 }
 

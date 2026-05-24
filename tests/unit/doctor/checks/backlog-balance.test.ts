@@ -4,6 +4,7 @@ import path from "node:path";
 import os from "node:os";
 import { check as backlogBalance } from "../../../../src/doctor/checks/backlog-balance";
 import { walkDocs } from "../../../../src/linter/walker";
+import { DEFAULT_THRESHOLDS } from "../../../../src/doctor/defaults";
 import type { CheckContext } from "../../../../src/doctor/types";
 
 let tmp: string;
@@ -21,6 +22,7 @@ async function makeContext(root: string): Promise<CheckContext> {
     },
     files,
     now: Date.UTC(2026, 4, 23),
+    thresholds: DEFAULT_THRESHOLDS,
   };
 }
 

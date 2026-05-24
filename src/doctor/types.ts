@@ -1,4 +1,4 @@
-import type { BeaconConfig } from "../core/config";
+import type { BeaconConfig, DoctorThresholds } from "../core/config";
 import type { DocFile } from "../linter/types";
 
 /**
@@ -25,6 +25,8 @@ export interface CheckContext {
   files: DocFile[];
   /** Reference timestamp for "X days ago" calculations. Defaults to Date.now(). */
   now: number;
+  /** Doctor thresholds — defaults merged with per-project overrides from config. */
+  thresholds: Required<DoctorThresholds>;
 }
 
 export interface Check {

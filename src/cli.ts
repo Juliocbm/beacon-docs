@@ -124,6 +124,20 @@ cli
   });
 
 cli
+  .command("about", "Show version, install location, project config, and AI-file status")
+  .action(async () => {
+    const { runAboutCommand } = await import("./commands/about");
+    const result = await runAboutCommand({
+      root: process.cwd(),
+      version: pkg.version,
+      installPath: fileURLToPath(import.meta.url),
+    });
+    process.stdout.write(result.output);
+    if (!result.output.endsWith("\n")) process.stdout.write("\n");
+    process.exit(result.exitCode);
+  });
+
+cli
   .command("completion <shell>", "Print a shell completion script (bash, zsh, or fish)")
   .action(async (shell: string) => {
     const { runCompletionCommand } = await import("./commands/completion");
@@ -229,6 +243,9 @@ function renderHelp(): string {
   lines.push(`${c.bold("Shell:")}`);
   lines.push(`  ${c.cyan("completion <shell>")}     Print a shell completion script (bash | zsh | fish)`);
   lines.push("");
+  lines.push(`${c.bold("Diagnostics:")}`);
+  lines.push(`  ${c.cyan("about")}                  Show version, install location, project config, AI-file status`);
+  lines.push("");
   lines.push(c.dim(`Run \`beacon <command> --help\` for command-specific options.`));
   return lines.join("\n");
 }
@@ -297,7 +314,7 @@ function renderNewHelp(): string {
 
 // Known commands — keep in sync with the `cli.command(...)` definitions above.
 // Used for unknown-command typo correction (Levenshtein "did you mean?").
-const KNOWN_COMMANDS = ["init", "sync", "new", "archive", "enable", "disable", "lint", "doctor", "completion"];
+const KNOWN_COMMANDS = ["init", "sync", "new", "archive", "enable", "disable", "lint", "doctor", "completion", "about"];
 
 // Intercept --help, no-args, and `new` without args BEFORE cli.parse()
 const args = process.argv.slice(2);

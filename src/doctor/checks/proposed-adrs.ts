@@ -2,7 +2,6 @@ import fs from "fs-extra";
 import matter from "gray-matter";
 import type { Check, Finding } from "../types";
 
-const PROPOSED_ADR_DAYS = 14;
 const MS_PER_DAY = 24 * 60 * 60 * 1000;
 
 function parseFrontmatterDate(value: unknown): number | null {
@@ -36,7 +35,7 @@ export const check: Check = {
         timestamp = stat.mtimeMs;
       }
       const ageDays = Math.floor((ctx.now - timestamp) / MS_PER_DAY);
-      if (ageDays >= PROPOSED_ADR_DAYS) {
+      if (ageDays >= ctx.thresholds.proposedAdrDays) {
         findings.push({
           area: "decisions",
           check: "proposed-adrs",
