@@ -154,18 +154,58 @@ function renderHelp(): string {
   lines.push("");
   lines.push(`${c.bold("Validation:")}`);
   lines.push(`  ${c.cyan("sync")}                   Regenerate AI rule files from docs/_meta/convention.md`);
+  lines.push(`  ${c.dim("                         ↳ Run after editing convention.md, or if `lint`")}`);
+  lines.push(`  ${c.dim("                           reports ai-files-sync (generated files drifted).")}`);
   lines.push(`  ${c.cyan("lint")}                   Validate the docs tree against the convention`);
   lines.push("");
   lines.push(c.dim(`Run \`beacon <command> --help\` for command-specific options.`));
   return lines.join("\n");
 }
 
-// Intercept --help and no-args BEFORE cli.parse()
+// Friendly help for `beacon new` invoked without args (instead of cac's "missing required arg" error)
+function renderNewHelp(): string {
+  const lines: string[] = [];
+  lines.push(`${c.bold("Usage:")}`);
+  lines.push(`  beacon new ${c.cyan("<type>")} ${c.cyan("<slug>")} [--category <integrations|operations>]`);
+  lines.push("");
+  lines.push(`${c.bold("Available types:")}`);
+  const types: Array<[string, string, string]> = [
+    ["plan", "active work with TODOs", "docs/plans/<slug>.plan.md"],
+    ["adr", "architecture decision record", "docs/adr/ADR-NNN-<slug>.md  (auto-numbered)"],
+    ["pattern", "replicable technical pattern", "docs/reference/<slug>.pattern.md"],
+    ["eval", "dated audit / snapshot", "docs/evaluations/YYYY-MM-DD-<slug>.eval.md"],
+    ["architecture", "system structure document", "docs/architecture/<slug>.architecture.md"],
+    ["module", "functional / business module", "docs/modules/<slug>.module.md  (requires modules addon)"],
+    ["guide", "operational / integration setup", "docs/{integrations,operations}/<slug>.guide.md"],
+    ["roadmap", "multi-sprint roadmap", "docs/roadmaps/<slug>.roadmap.md  (requires roadmaps addon)"],
+    ["todo", "backlog item", "docs/backlog/<slug>.todo.md"],
+    ["business", "business / strategy doc", "docs/business/<slug>.business.md  (requires business addon)"],
+    ["compliance", "regulatory document", "docs/compliance/<slug>.md  (requires compliance addon)"],
+  ];
+  for (const [t, desc, dest] of types) {
+    lines.push(`  ${c.cyan(t.padEnd(12))} ${desc.padEnd(34)} ${c.dim("→ " + dest)}`);
+  }
+  lines.push("");
+  lines.push(`${c.bold("Examples:")}`);
+  lines.push(`  beacon new plan billing-integration`);
+  lines.push(`  beacon new adr add-rate-limiting`);
+  lines.push(`  beacon new guide deploy-staging ${c.dim("--category operations")}`);
+  lines.push("");
+  lines.push(c.dim("Slugs must be kebab-case (lowercase, hyphen-separated)."));
+  return lines.join("\n");
+}
+
+// Intercept --help, no-args, and `new` without args BEFORE cli.parse()
 const args = process.argv.slice(2);
 const hasHelp = args.includes("--help") || args.includes("-h");
 const noArgs = args.length === 0;
 if (noArgs || (hasHelp && args.length === 1)) {
   console.log(renderHelp());
+  process.exit(0);
+}
+// `beacon new` with no type/slug → show friendly types reference instead of cac error
+if (args.length === 1 && args[0] === "new") {
+  console.log(renderNewHelp());
   process.exit(0);
 }
 

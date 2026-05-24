@@ -80,16 +80,24 @@ Press Ctrl+C to abort. Nothing is written until you confirm all choices.`,
 
   const ctx = await detectContext(opts.root);
 
+  const projectTypeHint = (t: ProjectType): string => {
+    const cats = defaultCategoriesFor(t);
+    if (cats.length === 0) return "nothing pre-selected — you opt into everything";
+    const addons = cats.filter((c) => !(CORE_CATEGORIES as readonly string[]).includes(c));
+    if (addons.length === 0) return "core only (minimal)";
+    return `core + ${addons.join(", ")}`;
+  };
+
   const type = (await p.select({
     message: "Project type?",
     options: [
-      { value: "web-app", label: "Web Application (full-stack, SaaS)" },
-      { value: "backend-service", label: "Backend Service / API" },
-      { value: "library", label: "Library / SDK / Package" },
-      { value: "cli-tool", label: "CLI Tool" },
-      { value: "mobile-app", label: "Mobile App" },
-      { value: "monorepo", label: "Monorepo / Workspace" },
-      { value: "custom", label: "Custom (no defaults)" },
+      { value: "web-app", label: "Web Application (full-stack, SaaS)", hint: projectTypeHint("web-app") },
+      { value: "backend-service", label: "Backend Service / API", hint: projectTypeHint("backend-service") },
+      { value: "library", label: "Library / SDK / Package", hint: projectTypeHint("library") },
+      { value: "cli-tool", label: "CLI Tool", hint: projectTypeHint("cli-tool") },
+      { value: "mobile-app", label: "Mobile App", hint: projectTypeHint("mobile-app") },
+      { value: "monorepo", label: "Monorepo / Workspace", hint: projectTypeHint("monorepo") },
+      { value: "custom", label: "Custom (no defaults)", hint: projectTypeHint("custom") },
     ],
   })) as ProjectType;
   if (p.isCancel(type)) {
@@ -122,10 +130,10 @@ Press Ctrl+C to abort. Nothing is written until you confirm all choices.`,
   const agents = (await p.multiselect({
     message: "Which AI agents do you use?",
     options: [
-      { value: "claude", label: "Claude Code" },
-      { value: "cursor", label: "Cursor" },
-      { value: "codex", label: "Codex / Copilot (AGENTS.md)" },
-      { value: "gemini", label: "Gemini CLI" },
+      { value: "claude", label: "Claude Code", hint: "generates CLAUDE.md at project root" },
+      { value: "cursor", label: "Cursor", hint: "generates .cursorrules + .cursor/rules/beacon.mdc" },
+      { value: "codex", label: "Codex / Copilot", hint: "generates AGENTS.md at project root" },
+      { value: "gemini", label: "Gemini CLI", hint: "generates GEMINI.md at project root" },
     ],
     initialValues: ["claude", "cursor"],
     required: true,

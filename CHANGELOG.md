@@ -1,5 +1,65 @@
 # beacon-docs
 
+## 0.1.7
+
+### Patch Changes
+
+- UX: four "quick win" explanation improvements across the CLI so first-time users don't have to guess what things mean.
+
+  **1. Project type hints in the init wizard** — each option in "Project type?" now shows which categories it enables by default:
+
+  ```
+  ● Web Application (full-stack, SaaS)   core + business, integrations, operations, roadmaps
+  ○ Backend Service / API                core + integrations, operations, roadmaps
+  ○ Library / SDK / Package              core only (minimal)
+  ○ CLI Tool                             core + operations
+  ○ Custom (no defaults)                 nothing pre-selected — you opt into everything
+  ```
+
+  Computed from `defaultCategoriesFor()` — single source of truth, no drift.
+
+  **2. AI agent hints in the init wizard** — each agent shows which file it generates:
+
+  ```
+  ■ Claude Code        generates CLAUDE.md at project root
+  ■ Cursor             generates .cursorrules + .cursor/rules/beacon.mdc
+  □ Codex / Copilot    generates AGENTS.md at project root
+  □ Gemini CLI         generates GEMINI.md at project root
+  ```
+
+  **3. Friendly help for `beacon new` without args** — instead of cac's terse "missing required arg" error, the CLI now prints a usage reference listing all 11 doc types with their destination paths and examples:
+
+  ```
+  $ beacon new
+  Usage:
+    beacon new <type> <slug> [--category <integrations|operations>]
+
+  Available types:
+    plan         active work with TODOs           → docs/plans/<slug>.plan.md
+    adr          architecture decision record     → docs/adr/ADR-NNN-<slug>.md  (auto-numbered)
+    pattern      replicable technical pattern     → docs/reference/<slug>.pattern.md
+    ...
+
+  Examples:
+    beacon new plan billing-integration
+    beacon new adr add-rate-limiting
+    beacon new guide deploy-staging --category operations
+
+  Slugs must be kebab-case (lowercase, hyphen-separated).
+  ```
+
+  **4. `sync` description expanded in `--help`** — the global help now explains when to run `sync`, not just what it does:
+
+  ```
+  Validation:
+    sync     Regenerate AI rule files from docs/_meta/convention.md
+             ↳ Run after editing convention.md, or if `lint` reports
+               ai-files-sync (generated files drifted).
+    lint     Validate the docs tree against the convention
+  ```
+
+  None of these change behavior — purely adding context where it was missing.
+
 ## 0.1.6
 
 ### Patch Changes
