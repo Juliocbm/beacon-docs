@@ -11,6 +11,7 @@ import { c } from "./ui/colors";
 import { CHECK, CROSS, WARN, ARROW } from "./ui/glyphs";
 import { closestMatch } from "./ui/suggest";
 import { renderRuleExplain, listAllRules, getAllRuleNames } from "./linter/rule-docs";
+import { renderCheckExplain, listAllChecks, getAllCheckNames } from "./doctor/check-docs";
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const pkg = JSON.parse(
@@ -126,7 +127,24 @@ cli
   .command("doctor", "Surface docs-tree health signals (stale plans, proposed ADRs, etc.)")
   .option("--strict", "Exit with code 1 if any findings exist")
   .option("--json", "Emit JSON output")
+  .option("--explain [check]", "Explain a doctor check (or list all checks if no name given)")
   .action(async (opts) => {
+    if (opts.explain !== undefined) {
+      if (opts.explain === true || opts.explain === "") {
+        process.stdout.write(listAllChecks() + "\n");
+        process.exit(0);
+      }
+      const explanation = renderCheckExplain(String(opts.explain));
+      if (!explanation) {
+        const suggestion = closestMatch(String(opts.explain), getAllCheckNames());
+        const hint = suggestion ? ` Did you mean ${c.cyan(suggestion)}?` : "";
+        console.error(`${CROSS} ${c.bold("Error:")} Unknown check "${opts.explain}".${hint}`);
+        console.error(c.dim(`Run \`beacon doctor --explain\` to list all checks.`));
+        process.exit(1);
+      }
+      process.stdout.write(explanation + "\n");
+      process.exit(0);
+    }
     const { runDoctorCommand } = await import("./commands/doctor");
     const result = await runDoctorCommand({
       root: process.cwd(),

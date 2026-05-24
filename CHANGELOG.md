@@ -1,5 +1,16 @@
 # beacon-docs
 
+## 0.2.1
+
+### Patch Changes
+
+- Polish patch for v0.2.0:
+
+  - **`beacon doctor --explain [check]`** — verbose explainer for each of the 4 doctor checks: area, why it exists, what triggers it, an example finding, and when it's _not_ flagged. Run with no check name to list all checks grouped by area. Mirrors `beacon lint --explain`.
+  - Typo correction for unknown check names (Levenshtein, same engine as the lint version).
+  - **README "Versioning policy" section** — explicit SemVer commitment and explains why versions can jump (e.g., `0.1.8` → `0.2.0` was a new command, not a polish).
+  - Tidied backlog: removed `beacon-doctor-health-checks.todo.md` now that the feature shipped (ADR-007 + the code itself are the durable record).
+
 ## 0.2.0
 
 ### Minor Changes

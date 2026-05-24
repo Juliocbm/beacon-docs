@@ -8,7 +8,7 @@
   <a href="https://www.npmjs.com/package/beacon-docs"><img src="https://img.shields.io/npm/dm/beacon-docs.svg?style=flat-square" alt="npm downloads"></a>
   <a href="https://github.com/Juliocbm/beacon-docs/blob/main/LICENSE"><img src="https://img.shields.io/npm/l/beacon-docs.svg?style=flat-square" alt="MIT License"></a>
   <img src="https://img.shields.io/node/v/beacon-docs.svg?style=flat-square" alt="Node version">
-  <img src="https://img.shields.io/badge/tests-220%20passing-brightgreen?style=flat-square" alt="220 tests passing">
+  <img src="https://img.shields.io/badge/tests-226%20passing-brightgreen?style=flat-square" alt="226 tests passing">
 </p>
 
 ---
@@ -231,9 +231,11 @@ Two different jobs:
 beacon doctor                    # exit 0 even with findings (informational)
 beacon doctor --strict           # exit 1 if any findings exist (for CI gating)
 beacon doctor --json             # machine-readable for tooling
+beacon doctor --explain          # list all checks grouped by area
+beacon doctor --explain <check>  # verbose docs (why it exists, triggers, fix)
 ```
 
-The 4 v0.2 checks are: `stale-plans` (>30 days), `proposed-adrs` (stuck >14 days), `old-evaluations` (>6 months, no refresh), `backlog-balance` (too many plans, no backlog).
+The 4 v0.2 checks are: `stale-plans` (>30 days), `proposed-adrs` (stuck >14 days), `old-evaluations` (>6 months, no refresh), `backlog-balance` (too many plans, no backlog). The same `--explain` flag exists on `beacon lint`.
 
 ---
 
@@ -356,6 +358,18 @@ If you want to see what your project's docs *could* look like, browse this repo.
 
 ---
 
+## Versioning policy
+
+Beacon follows [SemVer](https://semver.org/), with pre-1.0 conventions:
+
+- **Patch (`0.2.x`)** — bug fixes, UX polish, new lint rules, refinements to existing commands. Safe to upgrade within a `^0.2` range.
+- **Minor (`0.x.0`)** — new top-level commands or new feature surfaces (e.g., `beacon doctor` in `0.2.0`). May change behavior of existing commands when it's strictly an additive opt-in.
+- **Major (`1.0.0`)** — first commitment to API stability. Until then, expect minor versions to occasionally tighten things in non-breaking-but-noticeable ways.
+
+That's why the release history jumps from `0.1.8` straight to `0.2.0`: `beacon doctor` is a brand-new command, not a polish of `lint`.
+
+---
+
 ## Project status
 
 **v0.1.0** — initial public release. Feature-complete for the V1 scope: scaffold + 4 vendor generators + 7 commands + 11 lint rules.
@@ -382,7 +396,7 @@ The repo dogfoods its own convention, so contributing means:
 1. Open an issue describing the problem or feature.
 2. For non-trivial changes, propose an ADR in `docs/adr/` first.
 3. Code changes go in `src/`; add or update tests in `tests/`.
-4. Run `npm test` (220 tests must keep passing), `npm run typecheck`, `npm run build`.
+4. Run `npm test` (226 tests must keep passing), `npm run typecheck`, `npm run build`.
 5. Add a changeset (`npx changeset add`) describing your change.
 6. PR to `main`.
 
