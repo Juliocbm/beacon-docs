@@ -1,5 +1,19 @@
 # beacon-docs
 
+## 0.1.2
+
+### Patch Changes
+
+- Polish release — restrained visual upgrades, no new features or breaking changes:
+
+  - **Minimal ASCII logo** shown on `beacon` (no args) and `beacon --help`, with a reorganized help layout grouping commands by category (Setup / Lifecycle / Validation).
+  - **ANSI colors** throughout via `picocolors` (zero deps, ~3KB): errors in red, warnings in yellow, success in green, file paths dimmed, rule/category names in cyan.
+  - **Hierarchical lint output** — findings grouped by severity with file paths and tree-branch glyphs (`└─`) for inner detail lines, replacing the previous flat `[rule] file — message` format.
+  - **Spinners** during `beacon sync` (suppressed when called transitively from `beacon init`).
+  - **Colored glyphs** (`✔` green, `✗` red, `⚠` yellow, `→` cyan) replace plain unicode in command success/error messages.
+
+  Respects `NO_COLOR` env var natively (via picocolors auto-detect).
+
 ## 0.1.1
 
 ### Patch Changes
