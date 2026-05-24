@@ -1,5 +1,32 @@
 # beacon-docs
 
+## 0.4.0
+
+### Minor Changes
+
+- **Plugin system — `beacon doctor` and `beacon lint` are now extensible.**
+
+  Third-party plugins can add custom doctor checks and lint rules without forking. Configure them in `docs/_meta/beacon.config.json`:
+
+  ```json
+  {
+    "plugins": [
+      "beacon-plugin-compliance", // npm package
+      "./scripts/internal-checks.mjs" // relative path
+    ]
+  }
+  ```
+
+  A plugin is a JS module exporting a `BeaconPlugin` object with optional `checks[]`, `rules[]`, and `explain` entries that surface in `beacon doctor --explain` / `beacon lint --explain` alongside built-ins. Plugin-load failures warn to stderr but never crash the run.
+
+  `beacon about` now lists loaded plugins with their version and contributed-item counts.
+
+  Working reference plugin shipped at [`examples/plugin-example/`](https://github.com/Juliocbm/beacon-docs/tree/main/examples/plugin-example). Full authoring guide in [`docs/reference/writing-a-plugin.pattern.md`](https://github.com/Juliocbm/beacon-docs/blob/main/docs/reference/writing-a-plugin.pattern.md). Design rationale in [ADR-011](https://github.com/Juliocbm/beacon-docs/blob/main/docs/adr/ADR-011-plugin-system-design.md).
+
+  v0.4 scope is **checks + rules only** by design. Custom categories and AI agents deferred to v0.5+ pending real plugin authoring experience.
+
+  Tests: +31 (271 → 302 total).
+
 ## 0.3.1
 
 ### Patch Changes

@@ -8,7 +8,7 @@
   <a href="https://www.npmjs.com/package/beacon-docs"><img src="https://img.shields.io/npm/dm/beacon-docs.svg?style=flat-square" alt="npm downloads"></a>
   <a href="https://github.com/Juliocbm/beacon-docs/blob/main/LICENSE"><img src="https://img.shields.io/npm/l/beacon-docs.svg?style=flat-square" alt="MIT License"></a>
   <img src="https://img.shields.io/node/v/beacon-docs.svg?style=flat-square" alt="Node version">
-  <img src="https://img.shields.io/badge/tests-271%20passing-brightgreen?style=flat-square" alt="271 tests passing">
+  <img src="https://img.shields.io/badge/tests-302%20passing-brightgreen?style=flat-square" alt="302 tests passing">
 </p>
 
 ---
@@ -260,6 +260,40 @@ All fields are optional; unset ones use the defaults. `beacon about` shows which
 
 ---
 
+## Plugins
+
+`beacon doctor` and `beacon lint` are extensible — third-party plugins can add custom checks and rules without forking. Configure plugins in `docs/_meta/beacon.config.json`:
+
+```json
+{
+  "plugins": [
+    "beacon-plugin-compliance",          // installed via npm
+    "./scripts/internal-checks.mjs"      // relative path
+  ]
+}
+```
+
+A plugin is a JavaScript module exporting a `BeaconPlugin` object:
+
+```js
+// scripts/internal-checks.mjs
+export default {
+  name: "internal-checks",
+  version: "0.1.0",
+  checks: [/* Check[] for `beacon doctor` */],
+  rules:  [/* Rule[]  for `beacon lint`   */],
+  explain: { /* optional --explain entries */ },
+};
+```
+
+Plugin-contributed checks and rules fire alongside built-ins. `beacon about` lists loaded plugins with counts. `beacon doctor --explain <check>` and `beacon lint --explain <rule>` work for both built-in and plugin names.
+
+**Working reference:** [`examples/plugin-example/`](examples/plugin-example/) ships in the repo. Design rationale in [ADR-011](docs/adr/ADR-011-plugin-system-design.md). Full authoring guide in [`docs/reference/writing-a-plugin.pattern.md`](docs/reference/writing-a-plugin.pattern.md).
+
+Convention for publishing: name your package `beacon-plugin-<scope>` and add `"beacon-plugin"` to `keywords`.
+
+---
+
 ## Shell completion
 
 Beacon ships TAB-completion for bash, zsh, and fish. Install once per shell:
@@ -450,7 +484,7 @@ The repo dogfoods its own convention, so contributing means:
 1. Open an issue describing the problem or feature.
 2. For non-trivial changes, propose an ADR in `docs/adr/` first.
 3. Code changes go in `src/`; add or update tests in `tests/`.
-4. Run `npm test` (271 tests must keep passing), `npm run typecheck`, `npm run build`.
+4. Run `npm test` (302 tests must keep passing), `npm run typecheck`, `npm run build`.
 5. Add a changeset (`npx changeset add`) describing your change.
 6. PR to `main`.
 

@@ -12,6 +12,8 @@ import { CHECK, CROSS, WARN, ARROW } from "./ui/glyphs";
 import { closestMatch } from "./ui/suggest";
 import { renderRuleExplain, listAllRules, getAllRuleNames } from "./linter/rule-docs";
 import { renderCheckExplain, listAllChecks, getAllCheckNames } from "./doctor/check-docs";
+import { renderPluginExplain, getPluginNames } from "./plugins/explain";
+import type { LoadedPlugin } from "./plugins/types";
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const pkg = JSON.parse(
@@ -150,6 +152,26 @@ cli
     process.exit(result.exitCode);
   });
 
+/**
+ * Best-effort plugin load for the `--explain` handlers. Returns an empty list
+ * when there is no beacon.config.json in the current directory — `--explain`
+ * must work in any directory, including ones without a project.
+ */
+async function loadPluginsSafely(): Promise<LoadedPlugin[]> {
+  try {
+    const { readConfig } = await import("./core/config");
+    const { loadPlugins } = await import("./plugins/loader");
+    const config = await readConfig(process.cwd());
+    const result = await loadPlugins({
+      root: process.cwd(),
+      sources: config.plugins ?? [],
+    });
+    return result.plugins;
+  } catch {
+    return [];
+  }
+}
+
 cli
   .command("doctor", "Surface docs-tree health signals (stale plans, proposed ADRs, etc.)")
   .option("--strict", "Exit with code 1 if any findings exist")
@@ -161,16 +183,24 @@ cli
         process.stdout.write(listAllChecks() + "\n");
         process.exit(0);
       }
-      const explanation = renderCheckExplain(String(opts.explain));
-      if (!explanation) {
-        const suggestion = closestMatch(String(opts.explain), getAllCheckNames());
-        const hint = suggestion ? ` Did you mean ${c.cyan(suggestion)}?` : "";
-        console.error(`${CROSS} ${c.bold("Error:")} Unknown check "${opts.explain}".${hint}`);
-        console.error(c.dim(`Run \`beacon doctor --explain\` to list all checks.`));
-        process.exit(1);
+      const builtin = renderCheckExplain(String(opts.explain));
+      if (builtin) {
+        process.stdout.write(builtin + "\n");
+        process.exit(0);
       }
-      process.stdout.write(explanation + "\n");
-      process.exit(0);
+      // Fall through to plugin-contributed checks.
+      const plugins = await loadPluginsSafely();
+      const pluginExplain = renderPluginExplain(String(opts.explain), "check", plugins);
+      if (pluginExplain) {
+        process.stdout.write(pluginExplain + "\n");
+        process.exit(0);
+      }
+      const allNames = [...getAllCheckNames(), ...getPluginNames(plugins, "check")];
+      const suggestion = closestMatch(String(opts.explain), allNames);
+      const hint = suggestion ? ` Did you mean ${c.cyan(suggestion)}?` : "";
+      console.error(`${CROSS} ${c.bold("Error:")} Unknown check "${opts.explain}".${hint}`);
+      console.error(c.dim(`Run \`beacon doctor --explain\` to list all checks.`));
+      process.exit(1);
     }
     const { runDoctorCommand } = await import("./commands/doctor");
     const result = await runDoctorCommand({
@@ -178,6 +208,7 @@ cli
       strict: !!opts.strict,
       json: !!opts.json,
     });
+    for (const line of result.pluginErrors) console.error(line);
     process.stdout.write(result.output);
     if (!opts.json && !result.output.endsWith("\n")) process.stdout.write("\n");
     process.exit(result.exitCode);
@@ -194,16 +225,24 @@ cli
         process.stdout.write(listAllRules() + "\n");
         process.exit(0);
       }
-      const explanation = renderRuleExplain(String(opts.explain));
-      if (!explanation) {
-        const suggestion = closestMatch(String(opts.explain), getAllRuleNames());
-        const hint = suggestion ? ` Did you mean ${c.cyan(suggestion)}?` : "";
-        console.error(`${CROSS} ${c.bold("Error:")} Unknown rule "${opts.explain}".${hint}`);
-        console.error(c.dim(`Run \`beacon lint --explain\` to list all rules.`));
-        process.exit(1);
+      const builtin = renderRuleExplain(String(opts.explain));
+      if (builtin) {
+        process.stdout.write(builtin + "\n");
+        process.exit(0);
       }
-      process.stdout.write(explanation + "\n");
-      process.exit(0);
+      // Fall through to plugin-contributed rules.
+      const plugins = await loadPluginsSafely();
+      const pluginExplain = renderPluginExplain(String(opts.explain), "rule", plugins);
+      if (pluginExplain) {
+        process.stdout.write(pluginExplain + "\n");
+        process.exit(0);
+      }
+      const allNames = [...getAllRuleNames(), ...getPluginNames(plugins, "rule")];
+      const suggestion = closestMatch(String(opts.explain), allNames);
+      const hint = suggestion ? ` Did you mean ${c.cyan(suggestion)}?` : "";
+      console.error(`${CROSS} ${c.bold("Error:")} Unknown rule "${opts.explain}".${hint}`);
+      console.error(c.dim(`Run \`beacon lint --explain\` to list all rules.`));
+      process.exit(1);
     }
     const { runLintCommand } = await import("./commands/lint");
     const result = await runLintCommand({
@@ -211,6 +250,7 @@ cli
       strict: !!opts.strict,
       json: !!opts.json,
     });
+    for (const line of result.pluginErrors) console.error(line);
     process.stdout.write(result.output);
     if (!opts.json && !result.output.endsWith("\n")) process.stdout.write("\n");
     process.exit(result.exitCode);

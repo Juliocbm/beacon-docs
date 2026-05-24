@@ -2,8 +2,9 @@ import fs from "fs-extra";
 import path from "node:path";
 import { configPath, readConfig } from "../core/config";
 import { resolveThresholds, DEFAULT_THRESHOLDS } from "../doctor/defaults";
+import { loadPlugins } from "../plugins/loader";
 import { c } from "../ui/colors";
-import { CHECK, CROSS } from "../ui/glyphs";
+import { CHECK, CROSS, WARN } from "../ui/glyphs";
 
 export interface AboutCommandResult {
   exitCode: 0;
@@ -72,6 +73,27 @@ export async function runAboutCommand(opts: {
       seen.add(file);
       const exists = await fs.pathExists(path.join(opts.root, file));
       lines.push(`  ${exists ? CHECK : CROSS} ${file}${exists ? "" : c.dim(" (missing — run `beacon sync`)")}`);
+    }
+  }
+
+  lines.push("");
+  lines.push(c.bold("Plugins"));
+  const pluginSources = config.plugins ?? [];
+  if (pluginSources.length === 0) {
+    lines.push(c.dim("  (none configured)"));
+  } else {
+    const loaded = await loadPlugins({ root: opts.root, sources: pluginSources });
+    for (const lp of loaded.plugins) {
+      const checksCount = lp.plugin.checks?.length ?? 0;
+      const rulesCount = lp.plugin.rules?.length ?? 0;
+      const versionLabel = lp.plugin.version ? c.dim(`@${lp.plugin.version}`) : "";
+      lines.push(
+        `  ${CHECK} ${c.cyan(lp.plugin.name)}${versionLabel} ${c.dim(`(${checksCount} check${checksCount === 1 ? "" : "s"}, ${rulesCount} rule${rulesCount === 1 ? "" : "s"})`)}`,
+      );
+      lines.push(`     ${c.dim(`source: ${lp.source}`)}`);
+    }
+    for (const err of loaded.errors) {
+      lines.push(`  ${WARN} ${c.yellow(err.source)} ${c.dim(`(${err.message})`)}`);
     }
   }
 

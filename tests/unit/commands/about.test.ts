@@ -90,6 +90,46 @@ describe("commands/about", () => {
     expect(strip(result.output)).toContain("proposedAdrDays = 21");
   });
 
+  it('reports "(none configured)" when no plugins are listed', async () => {
+    await seedConfig();
+    const result = await runAboutCommand({
+      root: tmp,
+      version: "0.4.0",
+      installPath: "x",
+    });
+    expect(strip(result.output)).toContain("Plugins");
+    expect(strip(result.output)).toContain("(none configured)");
+  });
+
+  it("lists each loaded plugin with check/rule counts", async () => {
+    const pluginDir = path.join(tmp, "plugins");
+    await fs.ensureDir(pluginDir);
+    await fs.writeFile(
+      path.join(pluginDir, "demo.mjs"),
+      `export default {
+        name: "demo-plugin",
+        version: "1.2.3",
+        checks: [{ name: "demo-check", area: "activity", check: () => [] }],
+        rules: [
+          { name: "demo-rule-1", severity: "warning", check: () => [] },
+          { name: "demo-rule-2", severity: "warning", check: () => [] },
+        ],
+      };`,
+    );
+    await seedConfig({ plugins: ["./plugins/demo.mjs"] });
+    const result = await runAboutCommand({
+      root: tmp,
+      version: "0.4.0",
+      installPath: "x",
+    });
+    const clean = strip(result.output);
+    expect(clean).toContain("demo-plugin");
+    expect(clean).toContain("@1.2.3");
+    expect(clean).toContain("1 check");
+    expect(clean).toContain("2 rules");
+    expect(clean).toContain("source: ./plugins/demo.mjs");
+  });
+
   it("checks which AI files exist on disk", async () => {
     await seedConfig();
     await fs.writeFile(path.join(tmp, "CLAUDE.md"), "# CLAUDE\n");

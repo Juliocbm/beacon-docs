@@ -28,6 +28,12 @@ export interface BeaconConfig {
   agents: AgentId[];
   language: string;
   doctor?: DoctorConfig;
+  /**
+   * Optional list of plugin sources to load. Each entry is either an npm
+   * package name (e.g., "beacon-plugin-corporate") or a relative path
+   * starting with `./` or `../` (resolved against the project root).
+   */
+  plugins?: string[];
 }
 
 export function configPath(projectRoot: string): string {
