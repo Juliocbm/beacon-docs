@@ -1,9 +1,16 @@
 import type { BeaconConfig } from "../core/config";
 import { HEADER } from "./_header";
-import { buildUniversalRules, buildProjectSpecificRules, buildDecisionTable } from "./ai-rules";
+import {
+  buildUniversalRules,
+  buildProjectSpecificRules,
+  buildDecisionTable,
+  buildWorkflowTriggers,
+  buildLifecycleRules,
+  buildSelfChecks,
+} from "./ai-rules";
 
 export function renderAgentsMd(config: BeaconConfig): string {
-  return [
+  const sections = [
     HEADER,
     "",
     "# AGENTS.md — Documentation Convention",
@@ -16,5 +23,13 @@ export function renderAgentsMd(config: BeaconConfig): string {
     "",
     buildDecisionTable(config),
     "",
-  ].join("\n");
+    buildWorkflowTriggers(config),
+    "",
+  ];
+  const lifecycle = buildLifecycleRules(config);
+  if (lifecycle) {
+    sections.push(lifecycle, "");
+  }
+  sections.push(buildSelfChecks(), "");
+  return sections.join("\n");
 }

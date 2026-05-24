@@ -18,6 +18,34 @@ alwaysApply: true
 8. **Generated AI files (this one) must match `docs/_meta/convention.md`.** Run `beacon sync` after editing the convention.
 9. **Don't create folders outside the convention.** Run `beacon enable <addon>` or propose an ADR.
 
+**Persistence rule:** Decisions live in ADRs, multi-step work lives in plans, deferred work lives in backlog, retrospection lives in evals. Chat memory is session-scoped and lost when the conversation ends. If you find yourself relying on chat memory to track a decision, plan, or follow-up — write the document instead.
+
 ## Project-specific rules
 
 - **`operations/*.guide.md`** — deploy guides, admin runbooks, troubleshooting. Post-mortems go in `evaluations/`.
+
+## Workflow triggers — when to create documents
+
+These are the conversational signals that should prompt you to create or update Beacon documents. Treat them as imperatives, not suggestions.
+
+- **Design decision made** → write an ADR before implementing. Decisions about architecture, dependencies, naming conventions, or future flexibility belong in `adr/`. Run `beacon new adr <slug>`. Draft the ADR inline; don't ask permission to write it.
+- **Multi-step work agreed (3+ distinct actions)** → write a plan with checkbox steps. Run `beacon new plan <slug>` and write bite-sized steps. Check off each step in the same commit that completes it. Don't keep multi-step work only in chat memory.
+- **Scope deferred** → capture it as a backlog item immediately. When the user says "let's do that later", "out of scope for now", "maybe v0.5", or similar, run `beacon new todo <slug>` and write the *why* plus acceptance criteria. Don't let deferred work live only in conversation.
+- **Release shipped or milestone reached** → write a dated retrospective eval. Run `beacon new eval <slug>-retrospective` and capture what worked, what didn't, what you'd do differently. Even a 10-line eval is better than zero.
+- **Approach explained twice** → write a pattern doc. If you find yourself explaining the same technical approach across multiple files or sessions, run `beacon new pattern <slug>` and capture it in `reference/`.
+- **System structure changed** → update or add an architecture doc. New module, new layer, new external dependency that affects how the system is shaped — that goes in `architecture/`.
+
+## Document lifecycle — keeping documents alive
+
+- **Plans must be checked off as you go.** When you complete a step in an active plan, edit the checkbox in the same commit. Don't accumulate weeks of unchecked steps.
+- **Plans must archive when shipped.** Run `beacon archive plan <slug>` in the same session that ships the work. Don't leave shipped plans active in `docs/plans/`.
+- **ADRs that supersede must link both ways.** When a new ADR supersedes an old one, edit the old ADR's frontmatter `superseded-by` field to point to the new one. Both ADRs must reference each other.
+- **Backlog items graduate to plans, not the other way.** When a backlog item is about to be worked on, create a `.plan.md` and delete the `.todo.md`. Don't let both exist for the same scope.
+- **Retrospective evals belong to a moment in time.** Never edit a past eval. To revise observations, create a new dated eval that references the old one.
+
+## Self-checks — use Beacon on your own work
+
+- **Before committing to `docs/`:** run `beacon lint`. Fix errors. Don't ship docs that fail your own linter.
+- **Before tagging a release:** run `beacon doctor`. Address findings or document why they're acceptable.
+- **When uncertain where something goes:** run `beacon lint --explain <rule>` or `beacon doctor --explain <check>`. The verbose docs exist for exactly this reason.
+- **When in a new directory:** run `beacon about` to verify project type, enabled categories, and AI-file status before assuming structure.

@@ -1,16 +1,32 @@
 import type { BeaconConfig } from "../core/config";
 import { HEADER } from "./_header";
-import { buildUniversalRules, buildProjectSpecificRules } from "./ai-rules";
+import {
+  buildUniversalRules,
+  buildProjectSpecificRules,
+  buildWorkflowTriggers,
+  buildLifecycleRules,
+  buildSelfChecks,
+} from "./ai-rules";
 
-export function renderCursorRules(config: BeaconConfig): string {
-  return [
-    HEADER,
-    "",
+function buildCommonBody(config: BeaconConfig): string[] {
+  const sections = [
     buildUniversalRules(),
     "",
     buildProjectSpecificRules(config),
     "",
-  ].join("\n");
+    buildWorkflowTriggers(config),
+    "",
+  ];
+  const lifecycle = buildLifecycleRules(config);
+  if (lifecycle) {
+    sections.push(lifecycle, "");
+  }
+  sections.push(buildSelfChecks(), "");
+  return sections;
+}
+
+export function renderCursorRules(config: BeaconConfig): string {
+  return [HEADER, "", ...buildCommonBody(config)].join("\n");
 }
 
 export function renderCursorMdc(config: BeaconConfig): string {
@@ -21,14 +37,5 @@ export function renderCursorMdc(config: BeaconConfig): string {
     "alwaysApply: true",
     "---",
   ].join("\n");
-  return [
-    front,
-    "",
-    HEADER,
-    "",
-    buildUniversalRules(),
-    "",
-    buildProjectSpecificRules(config),
-    "",
-  ].join("\n");
+  return [front, "", HEADER, "", ...buildCommonBody(config)].join("\n");
 }

@@ -51,4 +51,20 @@ describe("vendor generators", () => {
     expect(out).toContain("globs:");
     expect(out).toMatch(/Universal rules/i);
   });
+
+  it("CLAUDE.md includes the behavioral sections added in v0.4.1", () => {
+    const md = renderClaudeMd(cfg);
+    expect(md).toMatch(/Workflow triggers/i);
+    expect(md).toMatch(/Document lifecycle/i);
+    expect(md).toMatch(/Self-checks/i);
+    expect(md).toMatch(/Persistence rule/);
+  });
+
+  it("AGENTS.md, GEMINI.md, .cursorrules, .cursor/rules/beacon.mdc all include the behavioral sections", () => {
+    for (const out of [renderAgentsMd(cfg), renderGeminiMd(cfg), renderCursorRules(cfg), renderCursorMdc(cfg)]) {
+      expect(out).toMatch(/Workflow triggers/i);
+      expect(out).toMatch(/Document lifecycle/i);
+      expect(out).toMatch(/Self-checks/i);
+    }
+  });
 });

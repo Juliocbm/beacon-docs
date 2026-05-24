@@ -1,5 +1,31 @@
 # beacon-docs
 
+## 0.4.1
+
+### Patch Changes
+
+- **Generated AI rule files now teach behavior, not just structure.**
+
+  Until v0.4.0, the AI rule files (`CLAUDE.md`, `AGENTS.md`, `GEMINI.md`, `.cursorrules`, `.cursor/rules/beacon.mdc`) told AI agents _where_ docs go and _how_ they're named, but never _when_ to create them. The result — visible in our own dogfooding audit — was AI agents that followed convention perfectly for the docs they created but under-created plans, retrospective evals, and backlog items because no rule said "you should be writing one right now."
+
+  This patch adds **three new sections** rendered into every generated AI file:
+
+  - **Workflow triggers** — conversational signals → beacon commands. _"Design decision made → run `beacon new adr`. Multi-step work agreed → run `beacon new plan`. Scope deferred → run `beacon new todo`. Release shipped → run `beacon new eval`."_
+  - **Document lifecycle** — maintenance rules for existing docs. _"Check off plan steps in the same commit. Archive plans when shipped. ADRs that supersede must link both ways."_
+  - **Self-checks** — Beacon's own tools as forcing functions. _"Run `beacon lint` before committing. Run `beacon doctor` before tagging."_
+
+  Plus a **persistence rule** in the universal section: _"Chat memory is session-scoped. If you find yourself relying on it for a decision, plan, or follow-up — write the document instead."_
+
+  Per-section content is **conditional on enabled categories** — projects without `backlog/` don't get backlog triggers, etc. Net additions: ~25-30 lines per AI rule file (CLAUDE.md went from 35 → 61 lines on a typical cli-tool project).
+
+  Source-of-truth `docs/_meta/convention.md` template (used by `beacon init`) was updated in lockstep — new projects start with the behavioral sections baked in.
+
+  **Rationale and full audit** in [`docs/evaluations/2026-05-24-ai-rules-behavioral-effectiveness.eval.md`](https://github.com/Juliocbm/beacon-docs/blob/main/docs/evaluations/2026-05-24-ai-rules-behavioral-effectiveness.eval.md).
+
+  Run `beacon sync` after upgrading to regenerate AI files with the new sections. Existing projects keep their `convention.md` as-is — if you want the new behavioral sections in your own convention, copy them from a fresh `beacon init` or from the template.
+
+  Tests: +10 (302 → 312 total).
+
 ## 0.4.0
 
 ### Minor Changes
