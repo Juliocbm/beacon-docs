@@ -837,6 +837,13 @@ section {
    v0.4.1 site refresh — additive sections (Path B)
    ============================================================ */
 
+/* ---- Nav brand group (brand link + version pill as siblings) ---- */
+.nav-brand-group {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
 /* ---- Nav version pill ---- */
 .nav-version {
   font-family: var(--mono);
@@ -847,7 +854,6 @@ section {
   border: 1px solid rgba(59,130,246,0.25);
   padding: 0.12rem 0.45rem;
   border-radius: 999px;
-  margin-left: 0.5rem;
   letter-spacing: 0.02em;
   text-decoration: none;
   transition: background 0.15s, border-color 0.15s;

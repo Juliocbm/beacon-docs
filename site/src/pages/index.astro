@@ -30,23 +30,25 @@ const versionHref = `https://github.com/Juliocbm/beacon-docs/releases/tag/v${ver
 <!-- ========== NAV ========== -->
 <nav class="nav">
   <div class="container">
-    <a href={`${base}/`} class="nav-brand">
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="28" height="28" aria-hidden="true">
-        <defs>
-          <linearGradient id="beam-nav" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stop-color="#fbbf24" stop-opacity="0.9"/>
-            <stop offset="100%" stop-color="#fbbf24" stop-opacity="0"/>
-          </linearGradient>
-        </defs>
-        <path d="M24 14 L8 42 L40 42 Z" fill="url(#beam-nav)" opacity="0.7"/>
-        <rect x="20" y="18" width="8" height="22" rx="1" fill="#3b82f6"/>
-        <rect x="18" y="12" width="12" height="8" rx="2" fill="#1e40af"/>
-        <rect x="22" y="8" width="4" height="4" rx="1" fill="#1e3a8a"/>
-        <rect x="16" y="40" width="16" height="4" rx="1" fill="#1e3a8a"/>
-      </svg>
-      Beacon
+    <div class="nav-brand-group">
+      <a href={`${base}/`} class="nav-brand">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="28" height="28" aria-hidden="true">
+          <defs>
+            <linearGradient id="beam-nav" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#fbbf24" stop-opacity="0.9"/>
+              <stop offset="100%" stop-color="#fbbf24" stop-opacity="0"/>
+            </linearGradient>
+          </defs>
+          <path d="M24 14 L8 42 L40 42 Z" fill="url(#beam-nav)" opacity="0.7"/>
+          <rect x="20" y="18" width="8" height="22" rx="1" fill="#3b82f6"/>
+          <rect x="18" y="12" width="12" height="8" rx="2" fill="#1e40af"/>
+          <rect x="22" y="8" width="4" height="4" rx="1" fill="#1e3a8a"/>
+          <rect x="16" y="40" width="16" height="4" rx="1" fill="#1e3a8a"/>
+        </svg>
+        Beacon
+      </a>
       <a href={versionHref} target="_blank" rel="noopener" class="nav-version" aria-label={`Version ${version} release notes`}>v{version}</a>
-    </a>
+    </div>
     <ul class="nav-links">
       <li><a href="#commands">Commands</a></li>
       <li><a href="#doctor">Doctor</a></li>
