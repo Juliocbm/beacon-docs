@@ -1,6 +1,6 @@
 {
   "name": "beacon-docs",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "Trail markers for AI-collaborative codebases — opinionated documentation convention and CLI.",
   "type": "module",
   "bin": {

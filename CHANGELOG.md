@@ -1,5 +1,20 @@
 # beacon-docs
 
+## 0.1.3
+
+### Patch Changes
+
+- Fix: `beacon init --yes` was silently succeeding — no message printed after scaffolding completed. Users reasonably assumed nothing happened.
+
+  Now prints a success line and a hint for the next step:
+
+  ```
+  ✔ Beacon docs scaffolded at /path/to/project/docs/
+    → Next: `beacon new plan <slug>` to create your first plan
+  ```
+
+  The interactive wizard path (`beacon init` without `--yes`) was unaffected — `@clack/prompts` already prints its own `outro` message there.
+
 ## 0.1.2
 
 ### Patch Changes

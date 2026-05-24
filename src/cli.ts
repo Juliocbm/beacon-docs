@@ -8,7 +8,7 @@ import type { ProjectType } from "./core/project-types";
 import type { ExistingFileAction } from "./core/existing-files";
 import { renderLogo } from "./ui/logo";
 import { c } from "./ui/colors";
-import { CHECK, CROSS, WARN } from "./ui/glyphs";
+import { CHECK, CROSS, WARN, ARROW } from "./ui/glyphs";
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const pkg = JSON.parse(
@@ -44,6 +44,8 @@ cli
         language: opts.language ?? "en",
         existingFiles: "replace" as ExistingFileAction,
       });
+      console.log(`${CHECK} Beacon docs scaffolded at ${c.dim(`${root}/docs/`)}`);
+      console.log(c.dim(`  ${ARROW} Next: \`beacon new plan <slug>\` to create your first plan`));
     } else {
       await runInitInteractive({ root });
     }
