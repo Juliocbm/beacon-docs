@@ -8,7 +8,7 @@
   <a href="https://www.npmjs.com/package/beacon-docs"><img src="https://img.shields.io/npm/dm/beacon-docs.svg?style=flat-square" alt="npm downloads"></a>
   <a href="https://github.com/Juliocbm/beacon-docs/blob/main/LICENSE"><img src="https://img.shields.io/npm/l/beacon-docs.svg?style=flat-square" alt="MIT License"></a>
   <img src="https://img.shields.io/node/v/beacon-docs.svg?style=flat-square" alt="Node version">
-  <img src="https://img.shields.io/badge/tests-226%20passing-brightgreen?style=flat-square" alt="226 tests passing">
+  <img src="https://img.shields.io/badge/tests-255%20passing-brightgreen?style=flat-square" alt="255 tests passing">
 </p>
 
 ---
@@ -205,6 +205,7 @@ Project type **suggests defaults**. The wizard pre-checks them, but every choice
 | `beacon disable <addon>` | Disable an add-on category (`--force` if folder has content) |
 | `beacon lint` | Validate the docs tree (`--strict` to escalate warnings, `--json` for CI) |
 | `beacon doctor` | Surface health signals: stale plans, proposed-ADRs, old evals, backlog balance |
+| `beacon completion <shell>` | Print a shell completion script (`bash`, `zsh`, `fish`) for TAB-completion |
 
 ### `beacon new` examples
 
@@ -236,6 +237,39 @@ beacon doctor --explain <check>  # verbose docs (why it exists, triggers, fix)
 ```
 
 The 4 v0.2 checks are: `stale-plans` (>30 days), `proposed-adrs` (stuck >14 days), `old-evaluations` (>6 months, no refresh), `backlog-balance` (too many plans, no backlog). The same `--explain` flag exists on `beacon lint`.
+
+---
+
+## Shell completion
+
+Beacon ships TAB-completion for bash, zsh, and fish. Install once per shell:
+
+```bash
+# bash (Linux, Git Bash on Windows)
+beacon completion bash > ~/.local/share/bash-completion/completions/beacon
+
+# zsh (macOS default since 2019)
+beacon completion zsh > "${fpath[1]}/_beacon"
+# then: autoload -U compinit && compinit
+
+# fish
+beacon completion fish > ~/.config/fish/completions/beacon.fish
+```
+
+Restart the shell (fish reloads automatically). Then:
+
+```bash
+$ beacon <TAB>
+archive  completion  disable  doctor  enable  init  lint  new  sync
+
+$ beacon doctor --explain <TAB>
+backlog-balance  old-evaluations  proposed-adrs  stale-plans
+
+$ beacon archive plan <TAB>          # reads docs/plans/ in the current project
+billing-integration  refactor-auth  shipping-v2
+```
+
+Completion is **static** — the script is generated once and embeds all command/flag/value lists. The only dynamic case is `beacon archive plan|roadmap <slug>`, which reads the filesystem inline. See [ADR-009](docs/adr/ADR-009-shell-completion-design.md) for the design rationale.
 
 ---
 
@@ -396,7 +430,7 @@ The repo dogfoods its own convention, so contributing means:
 1. Open an issue describing the problem or feature.
 2. For non-trivial changes, propose an ADR in `docs/adr/` first.
 3. Code changes go in `src/`; add or update tests in `tests/`.
-4. Run `npm test` (226 tests must keep passing), `npm run typecheck`, `npm run build`.
+4. Run `npm test` (255 tests must keep passing), `npm run typecheck`, `npm run build`.
 5. Add a changeset (`npx changeset add`) describing your change.
 6. PR to `main`.
 

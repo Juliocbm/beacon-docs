@@ -1,5 +1,25 @@
 # beacon-docs
 
+## 0.3.0
+
+### Minor Changes
+
+- **`beacon completion <shell>` — TAB-completion for bash, zsh, and fish.**
+
+  Install once per shell:
+
+  ```bash
+  beacon completion bash > ~/.local/share/bash-completion/completions/beacon
+  beacon completion zsh  > "${fpath[1]}/_beacon"
+  beacon completion fish > ~/.config/fish/completions/beacon.fish
+  ```
+
+  Then `beacon <TAB>`, `beacon doctor --explain <TAB>`, `beacon enable <TAB>`, etc. all autocomplete. Filesystem-aware for `beacon archive plan|roadmap <slug>` (reads `docs/plans/` and `docs/roadmaps/` inline). Typo correction for unknown shell names ("Did you mean bash?").
+
+  Architecturally: a single source-of-truth schema (`src/completion/schema.ts`) feeds three idiomatic shell generators (bash uses `compgen -W`, zsh uses `_values` with `name:description` entries, fish uses `complete -c -n`). Design rationale and alternatives considered are in ADR-009.
+
+  Tests: +29 (226 → 255 total).
+
 ## 0.2.1
 
 ### Patch Changes

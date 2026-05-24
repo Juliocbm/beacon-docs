@@ -124,6 +124,19 @@ cli
   });
 
 cli
+  .command("completion <shell>", "Print a shell completion script (bash, zsh, or fish)")
+  .action(async (shell: string) => {
+    const { runCompletionCommand } = await import("./commands/completion");
+    const result = runCompletionCommand({ shell });
+    if (result.isError) {
+      console.error(`${CROSS} ${c.bold("Error:")} ${result.output.trimEnd()}`);
+    } else {
+      process.stdout.write(result.output);
+    }
+    process.exit(result.exitCode);
+  });
+
+cli
   .command("doctor", "Surface docs-tree health signals (stale plans, proposed ADRs, etc.)")
   .option("--strict", "Exit with code 1 if any findings exist")
   .option("--json", "Emit JSON output")
@@ -213,6 +226,9 @@ function renderHelp(): string {
   lines.push(`  ${c.cyan("doctor")}                 Surface docs-tree health signals`);
   lines.push(`  ${c.dim("                         ↳ Stale plans, proposed ADRs, old evals, backlog balance.")}`);
   lines.push("");
+  lines.push(`${c.bold("Shell:")}`);
+  lines.push(`  ${c.cyan("completion <shell>")}     Print a shell completion script (bash | zsh | fish)`);
+  lines.push("");
   lines.push(c.dim(`Run \`beacon <command> --help\` for command-specific options.`));
   return lines.join("\n");
 }
@@ -281,7 +297,7 @@ function renderNewHelp(): string {
 
 // Known commands — keep in sync with the `cli.command(...)` definitions above.
 // Used for unknown-command typo correction (Levenshtein "did you mean?").
-const KNOWN_COMMANDS = ["init", "sync", "new", "archive", "enable", "disable", "lint", "doctor"];
+const KNOWN_COMMANDS = ["init", "sync", "new", "archive", "enable", "disable", "lint", "doctor", "completion"];
 
 // Intercept --help, no-args, and `new` without args BEFORE cli.parse()
 const args = process.argv.slice(2);
