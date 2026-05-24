@@ -8,6 +8,7 @@ import type { ProjectType } from "./core/project-types";
 import type { ExistingFileAction } from "./core/existing-files";
 import { renderLogo } from "./ui/logo";
 import { c } from "./ui/colors";
+import { CHECK, CROSS, WARN } from "./ui/glyphs";
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const pkg = JSON.parse(
@@ -28,7 +29,7 @@ cli
     const root = process.cwd();
     if (opts.yes) {
       if (!opts.type) {
-        console.error("Error: --type is required when using --yes.");
+        console.error(`${CROSS} ${c.bold("Error:")} --type is required when using --yes.`);
         process.exit(1);
       }
       await runInit({
@@ -53,7 +54,7 @@ cli
   .action(async () => {
     const { runSync } = await import("./commands/sync");
     await runSync({ root: process.cwd() });
-    console.log("✔ AI rule files regenerated.");
+    console.log(`${CHECK} AI rule files regenerated.`);
   });
 
 cli
@@ -67,7 +68,7 @@ cli
       type, slug, today,
       category: opts.category,
     });
-    console.log(`✔ Created ${path.relative(process.cwd(), file)}`);
+    console.log(`${CHECK} Created ${c.dim(path.relative(process.cwd(), file))}`);
   });
 
 cli
@@ -80,9 +81,9 @@ cli
       type, slug, force: !!opts.force,
     });
     if (result.warnings.length) {
-      for (const w of result.warnings) console.warn(`⚠ ${w}`);
+      for (const w of result.warnings) console.warn(`${WARN} ${c.yellow(w)}`);
     }
-    console.log(`✔ Archived to ${path.relative(process.cwd(), result.destination)}`);
+    console.log(`${CHECK} Archived to ${c.dim(path.relative(process.cwd(), result.destination))}`);
   });
 
 cli
@@ -90,7 +91,7 @@ cli
   .action(async (addon) => {
     const { runEnable } = await import("./commands/toggle");
     await runEnable({ root: process.cwd(), addon });
-    console.log(`✔ Enabled ${addon}.`);
+    console.log(`${CHECK} Enabled ${c.cyan(addon)}.`);
   });
 
 cli
@@ -99,7 +100,7 @@ cli
   .action(async (addon, opts) => {
     const { runDisable } = await import("./commands/toggle");
     await runDisable({ root: process.cwd(), addon, force: !!opts.force });
-    console.log(`✔ Disabled ${addon}.`);
+    console.log(`${CHECK} Disabled ${c.cyan(addon)}.`);
   });
 
 cli
