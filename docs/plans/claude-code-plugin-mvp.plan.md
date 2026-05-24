@@ -151,12 +151,14 @@ The skill detects Beacon absence at startup and degrades gracefully. This lets n
 
 **Findings summary:** See [appendix](#appendix-plugin-format-reference) at the end of this plan. Three findings materially change the original design and require an ADR addendum or revision (recorded below in `Plan revisions after T1`).
 
-### T2 — Scaffold `claude-plugin/` folder structure
-- [ ] Create `claude-plugin/` at repo root.
-- [ ] Create `.claude-plugin/plugin.json` with manifest fields (`name: "beacon"`, `version: "0.1.0"`, `description`, `author`, `homepage`, `repository`, `license: "MIT"`, `keywords: ["beacon-docs", "documentation", "skills"]`).
-- [ ] Create empty `skills/beacon-workflow/SKILL.md` placeholder.
-- [ ] Create empty `skills/{beacon-init,beacon-new,beacon-doctor,beacon-explain,beacon-archive}/SKILL.md` placeholders.
-- [ ] Create `claude-plugin/README.md` with install/usage docs scoped to the plugin.
+### T2 — Scaffold `claude-plugin/` folder structure ✅ DONE 2026-05-24
+- [x] Create `claude-plugin/` at repo root.
+- [x] Create `.claude-plugin/plugin.json` with manifest fields (`name: "beacon"`, `version: "0.1.0"`, `description`, `author`, `homepage`, `repository`, `license: "MIT"`, `keywords: [...]`).
+- [x] Create `skills/beacon-workflow/SKILL.md` placeholder with valid `description` frontmatter and a T3-pending marker in the body.
+- [x] Create `skills/{beacon-init,beacon-new,beacon-doctor,beacon-explain,beacon-archive}/SKILL.md` placeholders with valid frontmatter (description, allowed-tools, arguments where applicable) and T4-pending markers in their bodies.
+- [x] Create `claude-plugin/README.md` with install instructions (local `--plugin-dir` path), verification steps, and a usage table referencing the planned skill behavior.
+
+**Validation status:** Structure should be loadable via `claude plugin install --plugin-dir ./claude-plugin` but skills won't do useful work yet — they're placeholders. T7 (validation) will confirm actual install + load behavior. Real skill bodies come in T3 + T4.
 
 ### T3 — Write the main skill (`beacon-workflow`)
 - [ ] Frontmatter: `name: beacon-workflow`, `description: ...`, auto-load conditions.

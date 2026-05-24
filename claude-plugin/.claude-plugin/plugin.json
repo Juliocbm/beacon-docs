@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-plugin-manifest.json",
+  "name": "beacon",
+  "displayName": "Beacon — docs convention companion",
+  "version": "0.1.0",
+  "description": "Conversational companion for beacon-docs. Wraps the CLI with slash-skills (init, new, doctor, explain, archive) and an always-available workflow skill that nudges Claude to create the right Beacon documents at the right conversational moments.",
+  "author": {
+    "name": "julio",
+    "url": "https://github.com/Juliocbm"
+  },
+  "homepage": "https://beacon-docs.com",
+  "repository": "https://github.com/Juliocbm/beacon-docs",
+  "license": "MIT",
+  "keywords": [
+    "beacon-docs",
+    "documentation",
+    "docs-convention",
+    "adr",
+    "claude-code"
+  ]
+}
