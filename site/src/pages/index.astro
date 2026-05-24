@@ -2,11 +2,14 @@
 import "../styles/landing.css";
 import FeatureCard from "../components/FeatureCard.astro";
 import ComparisonTable from "../components/ComparisonTable.astro";
+import beaconPkg from "../../../package.json";
 
 const base = import.meta.env.BASE_URL.replace(/\/$/, "");
 const docsBase = base || "";
 
 const installCmd = "npx beacon-docs init";
+const version = beaconPkg.version;
+const versionHref = `https://github.com/Juliocbm/beacon-docs/releases/tag/v${version}`;
 ---
 
 <!DOCTYPE html>
@@ -14,14 +17,12 @@ const installCmd = "npx beacon-docs init";
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="Opinionated documentation convention + CLI that scaffolds the structure, generates per-vendor AI rule files (Claude, Cursor, Codex, Gemini), and lints the result." />
+  <meta name="description" content="Opinionated documentation convention + CLI that scaffolds the structure, generates per-vendor AI rule files (Claude, Cursor, Codex, Gemini), and lints the result. Now with plugin system and behavioral AI rules." />
   <title>Beacon — Trail markers for AI-collaborative codebases</title>
   <link rel="icon" type="image/svg+xml" href={`${base}/favicon.svg`} />
-  <!-- Preconnect for web fonts (optional, gracefully degrades) -->
   <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
-  <!-- Cloudflare Web Analytics -->
   <script is:inline defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token": "c7cc3ef7a4ce4c4cb43ac434ad5d0718"}'></script>
 </head>
 <body>
@@ -30,7 +31,6 @@ const installCmd = "npx beacon-docs init";
 <nav class="nav">
   <div class="container">
     <a href={`${base}/`} class="nav-brand">
-      <!-- Inline logo SVG (80px variant) -->
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="28" height="28" aria-hidden="true">
         <defs>
           <linearGradient id="beam-nav" x1="0" y1="0" x2="0" y2="1">
@@ -45,10 +45,13 @@ const installCmd = "npx beacon-docs init";
         <rect x="16" y="40" width="16" height="4" rx="1" fill="#1e3a8a"/>
       </svg>
       Beacon
+      <a href={versionHref} target="_blank" rel="noopener" class="nav-version" aria-label={`Version ${version} release notes`}>v{version}</a>
     </a>
     <ul class="nav-links">
-      <li><a href={`${docsBase}/install/`}>Install</a></li>
-      <li><a href={`${docsBase}/commands/`}>Commands</a></li>
+      <li><a href="#commands">Commands</a></li>
+      <li><a href="#doctor">Doctor</a></li>
+      <li><a href="#plugins">Plugins</a></li>
+      <li><a href={`${docsBase}/install/`}>Docs</a></li>
       <li><a href="https://github.com/Juliocbm/beacon-docs" target="_blank" rel="noopener">GitHub</a></li>
       <li><a href={`${docsBase}/install/`} class="btn-nav">Get started →</a></li>
     </ul>
@@ -58,6 +61,14 @@ const installCmd = "npx beacon-docs init";
 <!-- ========== HERO ========== -->
 <section class="hero">
   <div class="container" style="display:flex;flex-direction:column;align-items:center;">
+
+    <!-- What's new banner -->
+    <a href={versionHref} target="_blank" rel="noopener" class="whats-new-pill">
+      <span class="whats-new-badge">New in v{version}</span>
+      <span class="whats-new-text">AI rules now teach <em>when</em> to create docs, not just where they go</span>
+      <span class="whats-new-arrow">→</span>
+    </a>
+
     <div class="hero-logo" aria-hidden="true">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="96" height="96">
         <defs>
@@ -81,10 +92,9 @@ const installCmd = "npx beacon-docs init";
     <p class="hero-description">
       Opinionated documentation convention + CLI that scaffolds the structure,
       generates per-vendor AI rule files (Claude, Cursor, Codex, Gemini),
-      and lints the result.
+      lints the result, surfaces health signals, and lets you extend it via plugins.
     </p>
 
-    <!-- Install command box -->
     <div class="install-box" id="install-box">
       <div class="install-prompt">
         <span class="dollar">$</span>
@@ -109,18 +119,102 @@ const installCmd = "npx beacon-docs init";
         View on GitHub
       </a>
     </div>
+
+    <!-- Stats strip -->
+    <div class="hero-stats">
+      <div class="hero-stat"><strong>10</strong><span>commands</span></div>
+      <div class="hero-stat"><strong>11</strong><span>lint rules</span></div>
+      <div class="hero-stat"><strong>5</strong><span>doctor checks</span></div>
+      <div class="hero-stat"><strong>4</strong><span>AI vendors</span></div>
+      <div class="hero-stat"><strong>3</strong><span>shell completions</span></div>
+      <div class="hero-stat"><strong>312</strong><span>tests passing</span></div>
+    </div>
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- ========== BEHAVIORAL AI RULES (v0.4.1 headline) ========== -->
+<section class="behavioral-section" id="behavioral">
+  <div class="container">
+    <p class="section-label">New in v{version}</p>
+    <h2 class="section-header">AI rules that tell agents <em>when</em> to write docs.</h2>
+    <p class="section-sub">
+      Other AI rule files describe structure. Beacon's tell your agent to act:
+      "Decision made → write an ADR." "Multi-step work → write a plan." "Scope deferred → backlog item."
+    </p>
+
+    <div class="behavioral-grid">
+      <div class="behavioral-prose">
+        <p class="behavioral-eyebrow">The problem</p>
+        <p>
+          Stock AI rule files teach <strong>where</strong> docs go and <strong>how</strong> they're named — but never <strong>when</strong>
+          to create them. So your agent faithfully follows your conventions for the few docs it writes,
+          and quietly skips writing the rest.
+        </p>
+        <p class="behavioral-eyebrow" style="margin-top:1.5rem;">The fix</p>
+        <p>
+          v0.4.1 adds <strong>workflow triggers</strong>, <strong>document lifecycle rules</strong>, and
+          <strong>self-checks</strong> to every generated file (CLAUDE.md, AGENTS.md, GEMINI.md, .cursorrules).
+          Conditional on enabled categories — no noise for things you don't use.
+        </p>
+        <p>
+          Source-of-truth lives in <code>docs/_meta/convention.md</code>; <code>beacon sync</code>
+          regenerates every vendor file atomically.
+        </p>
+      </div>
+
+      <div class="code-panel">
+        <div class="code-panel-header">
+          <span class="code-panel-dot red"></span>
+          <span class="code-panel-dot yellow"></span>
+          <span class="code-panel-dot green"></span>
+          <span class="code-panel-title">CLAUDE.md (excerpt)</span>
+        </div>
+<pre class="behavioral-code"><span class="md-h2">## Workflow triggers — when to create documents</span>
+
+<span class="md-rule">- <strong>Design decision made</strong> → write an ADR before</span>
+<span class="md-rule">  implementing. Run <code>beacon new adr &lt;slug&gt;</code>.</span>
+<span class="md-rule">  Draft inline; don't ask permission.</span>
+
+<span class="md-rule">- <strong>Multi-step work agreed (3+ actions)</strong> →</span>
+<span class="md-rule">  write a plan with checkbox steps.</span>
+<span class="md-rule">  Run <code>beacon new plan &lt;slug&gt;</code>.</span>
+
+<span class="md-rule">- <strong>Scope deferred</strong> ("let's do that later",</span>
+<span class="md-rule">  "out of scope for now") → run</span>
+<span class="md-rule">  <code>beacon new todo &lt;slug&gt;</code> with <em>why</em> +</span>
+<span class="md-rule">  acceptance criteria. Don't leave in chat only.</span>
+
+<span class="md-rule">- <strong>Release shipped</strong> → write a dated</span>
+<span class="md-rule">  retrospective via <code>beacon new eval &lt;slug&gt;</code>.</span>
+
+<span class="md-h2">## Document lifecycle</span>
+
+<span class="md-rule">- Plans must be checked off as you go.</span>
+<span class="md-rule">- Plans must archive when shipped.</span>
+<span class="md-rule">- ADRs that supersede must link both ways.</span>
+<span class="fade">...</span></pre>
+      </div>
+    </div>
+
+    <p class="behavioral-caption">
+      <strong>Persistence rule:</strong> chat memory is session-scoped. If you find yourself relying
+      on it to track a decision or follow-up — write the document instead.
+    </p>
   </div>
 </section>
 
 <div class="section-divider"></div>
 
 <!-- ========== COMMANDS SECTION ========== -->
-<section class="commands-section">
+<section class="commands-section" id="commands">
   <div class="container">
     <p class="section-label">CLI</p>
-    <h2 class="section-header">The convention. Plus the tools to enforce it.</h2>
-    <p class="section-sub">Four commands cover the full lifecycle of AI-ready documentation.</p>
+    <h2 class="section-header">10 commands. One mental model.</h2>
+    <p class="section-sub">Scaffold, create, validate, extend. Every command discoverable via <code>beacon --help</code> or TAB completion.</p>
 
+    <p class="commands-subhead">Core lifecycle</p>
     <div class="commands-grid">
       <FeatureCard
         command="beacon init"
@@ -133,35 +227,249 @@ const installCmd = "npx beacon-docs init";
         ]}
       />
       <FeatureCard
+        command="beacon new"
+        tagline="Type-safe doc creation."
+        bullets={[
+          "11 doc types: plan, adr, pattern, architecture, module, guide, roadmap, todo, eval, compliance, business",
+          "ADRs auto-numbered (ADR-001, ADR-002, ...)",
+          "Evaluations date-prefixed (YYYY-MM-DD-name.eval.md)",
+          "Frontmatter pre-populated; correct folder enforced",
+        ]}
+      />
+      <FeatureCard
+        command="beacon archive"
+        tagline="Move shipped work to _archive/."
+        bullets={[
+          "Works for plans and roadmaps",
+          "Blocks on unchecked TODOs unless --force",
+          "Updates README references automatically",
+          "Status lives in folder, never in filename",
+        ]}
+      />
+      <FeatureCard
         command="beacon sync"
         tagline="Single source of truth."
         bullets={[
           "Edit one convention.md, regenerate everything atomically",
           "Outputs: CLAUDE.md, AGENTS.md, GEMINI.md, .cursorrules, .cursor/rules/beacon.mdc",
           "Idempotent — safe in pre-commit hooks",
-          "Caught by beacon lint --strict if you forget to run it",
+          "Drift caught by beacon lint --strict",
         ]}
       />
-      <FeatureCard
-        command="beacon new"
-        tagline="Type-safe doc creation."
-        bullets={[
-          "11 doc types: plan, adr, pattern, architecture, module, guide, roadmap, todo, eval, compliance, business",
-          "ADRs auto-numbered (ADR-001-, ADR-002-…)",
-          "Evaluations date-prefixed (2026-05-22-name.eval.md)",
-          "Frontmatter pre-populated, correct folder enforced",
-        ]}
-      />
+    </div>
+
+    <p class="commands-subhead">Validation</p>
+    <div class="commands-grid">
       <FeatureCard
         command="beacon lint"
         tagline="11 enforced rules."
         bullets={[
-          "Errors: suffix/location mismatch, kebab-case, missing READMEs, AI-file sync drift",
-          "Warnings: duplicate H1s, oversized files, ADR gaps, plans without TODOs",
-          "--strict for CI gate (warnings become errors)",
-          "--json for machine-readable output",
+          "Errors: suffix/location, kebab-case, missing READMEs, AI-file drift",
+          "Warnings: duplicate titles, oversized files, ADR gaps",
+          "--explain <rule> for verbose docs (severity, why, fix)",
+          "--strict for CI gate, --json for machine output",
         ]}
       />
+      <FeatureCard
+        command="beacon doctor"
+        tagline="5 health checks. Soft signals."
+        bullets={[
+          "stale-plans, proposed-adrs, old-evaluations, orphan-readmes, backlog-balance",
+          "Exit 0 by default (informational); --strict for CI gating",
+          "--explain <check> for verbose docs",
+          "Per-project tunable thresholds in beacon.config.json",
+        ]}
+      />
+    </div>
+
+    <p class="commands-subhead">Add-ons & diagnostics</p>
+    <div class="commands-grid">
+      <FeatureCard
+        command="beacon enable / disable"
+        tagline="Toggle add-on categories."
+        bullets={[
+          "6 add-ons: compliance, business, modules, integrations, operations, roadmaps",
+          "No-arg invocation prints the available list",
+          "Typo-correction: `beacon enable opperations` → did you mean operations?",
+          "Disable refuses on non-empty folders unless --force",
+        ]}
+      />
+      <FeatureCard
+        command="beacon completion"
+        tagline="TAB-completion for bash / zsh / fish."
+        bullets={[
+          "Install once: beacon completion bash > /path",
+          "Autocompletes commands, flags, addons, doc types, lint rules, check names",
+          "Dynamic slug completion for archive plan/roadmap (reads docs/)",
+          "Static script — zero Node startup latency per TAB",
+        ]}
+      />
+      <FeatureCard
+        command="beacon about"
+        tagline="Diagnostics in one place."
+        bullets={[
+          "Version, install path, Node version, platform",
+          "Project type, enabled categories, AI agents, language",
+          "Doctor threshold overrides vs defaults",
+          "Loaded plugins with version + check/rule counts",
+        ]}
+      />
+    </div>
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- ========== DOCTOR SECTION ========== -->
+<section class="doctor-section" id="doctor">
+  <div class="container">
+    <p class="section-label">Health checks</p>
+    <h2 class="section-header"><code>beacon doctor</code> tells you when the tree is drifting.</h2>
+    <p class="section-sub">
+      Lint validates structure. Doctor surfaces <em>health signals</em> — soft observations across four areas,
+      with actionable suggestions. Informational by default; gate CI with <code>--strict</code>.
+    </p>
+
+    <div class="doctor-grid">
+      <div class="doctor-checks">
+        <div class="doctor-check">
+          <div class="doctor-check-area">◉ Activity</div>
+          <div class="doctor-check-name">stale-plans</div>
+          <div class="doctor-check-desc">Plan files unmodified for ≥ 30 days. Archive or add a status note.</div>
+        </div>
+        <div class="doctor-check">
+          <div class="doctor-check-area" style="color:#a78bfa;">◇ Decisions</div>
+          <div class="doctor-check-name">proposed-adrs</div>
+          <div class="doctor-check-desc">ADRs stuck in <code>status: proposed</code> for ≥ 14 days. Accept, reject, or supersede.</div>
+        </div>
+        <div class="doctor-check">
+          <div class="doctor-check-area" style="color:#60a5fa;">◈ Snapshots</div>
+          <div class="doctor-check-name">old-evaluations</div>
+          <div class="doctor-check-desc">Evals ≥ 6 months old with no newer refresh on the same topic.</div>
+        </div>
+        <div class="doctor-check">
+          <div class="doctor-check-area" style="color:#fbbf24;">◐ Balance</div>
+          <div class="doctor-check-name">orphan-readmes</div>
+          <div class="doctor-check-desc">Add-on folders enabled but containing only their auto-generated README.</div>
+        </div>
+        <div class="doctor-check">
+          <div class="doctor-check-area" style="color:#fbbf24;">◐ Balance</div>
+          <div class="doctor-check-name">backlog-balance</div>
+          <div class="doctor-check-desc">&gt;5 active plans with empty backlog, or plans:backlog &gt; 5:1.</div>
+        </div>
+      </div>
+
+      <div class="code-panel">
+        <div class="code-panel-header">
+          <span class="code-panel-dot red"></span>
+          <span class="code-panel-dot yellow"></span>
+          <span class="code-panel-dot green"></span>
+          <span class="code-panel-title">$ beacon doctor</span>
+        </div>
+<pre class="doctor-output"><span class="doctor-area">◉ <strong>Activity (2)</strong></span>
+  📄 docs/plans/shipping.plan.md
+    └─ <span class="doctor-check-cyan">stale-plans</span>: Last modified 47 days ago.
+       → If shipped, run <code>beacon archive plan &lt;slug&gt;</code>.
+
+  📄 docs/plans/refactor-auth.plan.md
+    └─ <span class="doctor-check-cyan">stale-plans</span>: Last modified 33 days ago.
+       → ...
+
+<span class="doctor-area" style="color:#a78bfa;">◇ <strong>Decisions (1)</strong></span>
+  📄 docs/adr/ADR-007-event-bus.md
+    └─ <span class="doctor-check-cyan">proposed-adrs</span>: Stuck in proposed for 22 days.
+       → Accept it, reject it, or update with a status note.
+
+<span class="doctor-dim">3 findings across 2 areas.</span></pre>
+      </div>
+    </div>
+
+    <p class="doctor-caption">
+      Run <code>beacon doctor --explain &lt;check&gt;</code> for verbose docs on any check.
+      Tune thresholds per-project in <code>beacon.config.json</code> under <code>doctor.thresholds</code>.
+    </p>
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- ========== PLUGINS SECTION ========== -->
+<section class="plugins-section" id="plugins">
+  <div class="container">
+    <p class="section-label">Extensibility</p>
+    <h2 class="section-header">Plugin system — custom checks and rules without forking.</h2>
+    <p class="section-sub">
+      Beacon ships strong defaults. When your project needs something specific
+      (corporate compliance checks, monorepo shape rules, custom naming),
+      drop in a plugin instead of patching the core.
+    </p>
+
+    <div class="plugins-grid">
+      <div class="plugins-prose">
+        <p class="plugins-eyebrow">Configure once</p>
+        <div class="code-panel">
+          <div class="code-panel-header">
+            <span class="code-panel-dot red"></span>
+            <span class="code-panel-dot yellow"></span>
+            <span class="code-panel-dot green"></span>
+            <span class="code-panel-title">docs/_meta/beacon.config.json</span>
+          </div>
+<pre class="plugins-code"><span class="md-rule">{</span>
+<span class="md-rule">  "projectType": "library",</span>
+<span class="md-rule">  "plugins": [</span>
+<span class="md-rule">    <span class="plug-str">"beacon-plugin-compliance"</span>,</span>
+<span class="md-rule">    <span class="plug-str">"./scripts/internal-checks.mjs"</span></span>
+<span class="md-rule">  ]</span>
+<span class="md-rule">}</span></pre>
+        </div>
+        <p class="plugins-caption-small">npm packages or relative paths. Both work.</p>
+      </div>
+
+      <div class="plugins-prose">
+        <p class="plugins-eyebrow">Write once</p>
+        <div class="code-panel">
+          <div class="code-panel-header">
+            <span class="code-panel-dot red"></span>
+            <span class="code-panel-dot yellow"></span>
+            <span class="code-panel-dot green"></span>
+            <span class="code-panel-title">my-plugin/index.mjs</span>
+          </div>
+<pre class="plugins-code"><span class="md-rule"><span class="plug-kw">export default</span> {</span>
+<span class="md-rule">  name: <span class="plug-str">"my-plugin"</span>,</span>
+<span class="md-rule">  version: <span class="plug-str">"0.1.0"</span>,</span>
+<span class="md-rule">  checks: [<span class="plug-com">/* doctor Check[] */</span>],</span>
+<span class="md-rule">  rules:  [<span class="plug-com">/* lint Rule[]  */</span>],</span>
+<span class="md-rule">  explain: {</span>
+<span class="md-rule">    <span class="plug-str">"my-check"</span>: {</span>
+<span class="md-rule">      summary: <span class="plug-str">"..."</span>,</span>
+<span class="md-rule">      why: <span class="plug-str">"..."</span>,</span>
+<span class="md-rule">      fix: <span class="plug-str">"..."</span>,</span>
+<span class="md-rule">    },</span>
+<span class="md-rule">  },</span>
+<span class="md-rule">};</span></pre>
+        </div>
+        <p class="plugins-caption-small">Reuses Beacon's <code>Check</code> and <code>Rule</code> types.</p>
+      </div>
+    </div>
+
+    <div class="plugins-features">
+      <div class="plugin-feature">
+        <strong>Fire alongside built-ins.</strong>
+        Plugin checks and rules run together with Beacon's defaults. <code>--explain</code> works for both.
+      </div>
+      <div class="plugin-feature">
+        <strong>Failures are non-fatal.</strong>
+        A misconfigured plugin warns to stderr; built-in checks keep running. Never bricks <code>doctor</code> or <code>lint</code>.
+      </div>
+      <div class="plugin-feature">
+        <strong>Discoverable.</strong>
+        <code>beacon about</code> lists loaded plugins with versions and contributed counts.
+      </div>
+      <div class="plugin-feature">
+        <strong>Working reference shipped.</strong>
+        See <a href="https://github.com/Juliocbm/beacon-docs/tree/main/examples/plugin-example" target="_blank" rel="noopener">examples/plugin-example/</a> in the repo.
+        Naming convention: <code>beacon-plugin-&lt;scope&gt;</code>.
+      </div>
     </div>
   </div>
 </section>
@@ -174,7 +482,7 @@ const installCmd = "npx beacon-docs init";
     <p class="section-label">Comparison</p>
     <h2 class="section-header">What's different about Beacon?</h2>
     <p class="section-sub">
-      No other tool combines convention + enforcement + AI rule generation in one place.
+      No other tool combines convention + enforcement + AI rule generation + plugin extensibility in one place.
     </p>
     <ComparisonTable />
     <p style="margin-top:1rem;font-size:0.78rem;color:var(--text-dim);">
@@ -197,31 +505,29 @@ const installCmd = "npx beacon-docs init";
     </p>
 
     <div class="ssot-visual">
-      <!-- Source -->
       <div class="ssot-source">
         <div class="file-name">docs/_meta/convention.md</div>
         <div class="file-desc">
           # Documentation Convention<br/>
           &gt; Project type: library<br/><br/>
-          ## Structure rules<br/>
+          ## Universal rules<br/>
           1. One doc = one category.<br/>
           2. Status via folder, never filename.<br/>
           3. kebab-case for all filenames.<br/>
           ...<br/>
-          ## Where does X go?<br/>
-          | architecture/ | How the system is built |<br/>
-          | adr/          | Why decisions were made  |<br/>
-          | plans/        | What's being built now   |
+          ## Workflow triggers<br/>
+          - Design decision → beacon new adr<br/>
+          - Multi-step work → beacon new plan<br/>
+          - Scope deferred  → beacon new todo<br/>
+          ...
         </div>
       </div>
 
-      <!-- Arrow -->
       <div class="ssot-arrow-col">
         <div class="ssot-cmd">beacon sync</div>
         <div class="ssot-arrow">→</div>
       </div>
 
-      <!-- Targets -->
       <div class="ssot-targets">
         <div class="ssot-file"><span class="ssot-file-dot"></span>CLAUDE.md</div>
         <div class="ssot-file"><span class="ssot-file-dot"></span>AGENTS.md</div>
@@ -235,116 +541,6 @@ const installCmd = "npx beacon-docs init";
       Edit the convention once. <code>beacon sync</code> regenerates everything.
       <code>beacon lint --strict</code> catches drift in CI.
     </p>
-  </div>
-</section>
-
-<div class="section-divider"></div>
-
-<!-- ========== FILE TREE ========== -->
-<section class="filetree-section">
-  <div class="container">
-    <p class="section-label">Output</p>
-    <h2 class="section-header">What you get after <code style="font-size:0.85em;background:var(--bg-code);padding:0.1em 0.3em;border-radius:4px;border:1px solid var(--border)">beacon init</code></h2>
-    <p class="section-sub">A complete, navigable docs structure plus AI rule files — ready in under 30 seconds.</p>
-
-    <div class="filetree-grid">
-      <!-- Left: file tree -->
-      <div>
-        <p class="panel-label">File tree</p>
-        <div class="code-panel">
-          <div class="code-panel-header">
-            <span class="code-panel-dot red"></span>
-            <span class="code-panel-dot yellow"></span>
-            <span class="code-panel-dot green"></span>
-            <span class="code-panel-title">your-project/</span>
-          </div>
-          <pre><span class="tree-generated">├── CLAUDE.md                  ← generated</span>
-<span class="tree-generated">├── AGENTS.md                  ← generated</span>
-<span class="tree-generated">├── GEMINI.md                  ← generated</span>
-<span class="tree-generated">├── .cursorrules               ← generated</span>
-<span class="tree-generated">├── .cursor/rules/beacon.mdc   ← generated</span>
-<span class="tree-file">├── package.json               ← gets docs:lint</span>
-<span class="tree-dir">└── docs/</span>
-<span class="tree-file">    ├── README.md              ← master index</span>
-<span class="tree-dir">    ├── _meta/</span>
-<span class="tree-file">    │   ├── convention.md      ← you edit this</span>
-<span class="tree-file">    │   └── beacon.config.json</span>
-<span class="tree-dir">    ├── reference/</span>
-<span class="tree-dir">    ├── architecture/</span>
-<span class="tree-dir">    ├── adr/</span>
-<span class="tree-dir">    ├── plans/</span>
-<span class="tree-dir">    │   └── _archive/</span>
-<span class="tree-dir">    ├── backlog/</span>
-<span class="tree-dir">    └── evaluations/</span></pre>
-        </div>
-      </div>
-
-      <!-- Right: CLAUDE.md preview -->
-      <div>
-        <p class="panel-label">Generated CLAUDE.md (preview)</p>
-        <div class="code-panel code-block-wrap">
-          <div class="code-panel-header">
-            <span class="code-panel-dot red"></span>
-            <span class="code-panel-dot yellow"></span>
-            <span class="code-panel-dot green"></span>
-            <span class="code-panel-title">CLAUDE.md</span>
-          </div>
-          <button class="code-block-copy" data-copy="# Documentation Convention
-
-> Project type: **library**. Single source: docs/_meta/convention.md
-
-## Universal rules
-
-1. One doc = one category. Never duplicate.
-2. Status via folder, never filename. Closed plan → _archive/
-3. kebab-case for all filenames.
-4. README required in every category folder.
-5. ADRs are append-only. Supersede with a new ADR.
-6. Evaluations are immutable snapshots.
-7. Plans archive to _archive/ when done.
-8. Generated AI files must match convention.md. Run beacon sync.
-9. Don't create folders outside the convention.
-
-## Where does X go?
-
-| Question                          | Folder        |
-|-----------------------------------|---------------|
-| How is X done technically?        | reference/    |
-| How is the system structured?     | architecture/ |
-| Why was X decided?                | adr/          |
-| What is being built right now?    | plans/        |
-| What is on the future backlog?    | backlog/      |
-| What was the state at date X?     | evaluations/  |">Copy</button>
-          <pre><span class="md-h1"># Documentation Convention</span>
-
-<span class="md-meta">&gt; Project type: **library**.</span>
-<span class="md-meta">&gt; Single source: docs/_meta/convention.md</span>
-
-<span class="md-h2">## Universal rules</span>
-
-<span class="md-rule">1. One doc = one category. Never duplicate.</span>
-<span class="md-rule">2. Status via folder, never filename.</span>
-<span class="md-rule">   Closed plan → _archive/, not *_DONE.md</span>
-<span class="md-rule">3. kebab-case for all filenames.</span>
-<span class="md-rule">4. README required in every category folder.</span>
-<span class="md-rule">5. ADRs are append-only. Supersede with a new ADR.</span>
-<span class="md-rule">6. Evaluations are immutable snapshots.</span>
-<span class="md-rule">7. Plans archive to _archive/ when done.</span>
-<span class="md-rule">8. Generated AI files must match convention.md.</span>
-<span class="md-rule">   Run beacon sync after editing the convention.</span>
-<span class="md-rule">9. Don't create folders outside the convention.</span>
-
-<span class="md-h2">## Where does X go?</span>
-
-<span class="md-bullet">| How is X done technically?     | reference/    |</span>
-<span class="md-bullet">| How is the system structured?  | architecture/ |</span>
-<span class="md-bullet">| Why was X decided?             | adr/          |</span>
-<span class="md-bullet">| What is being built right now? | plans/        |</span>
-<span class="md-bullet">| What's on the future backlog?  | backlog/      |</span>
-<span class="fade">...</span></pre>
-        </div>
-      </div>
-    </div>
   </div>
 </section>
 
@@ -449,7 +645,7 @@ const installCmd = "npx beacon-docs init";
           <li>Runs only when docs or AI files change (paths filter)</li>
           <li><code style="font-family:var(--mono);font-size:0.85em">--strict</code> escalates warnings to errors in CI</li>
           <li><code style="font-family:var(--mono);font-size:0.85em">--json</code> for structured output in tooling</li>
-          <li>Zero extra setup — npx handles the install</li>
+          <li>Pair with <code style="font-family:var(--mono);font-size:0.85em">beacon doctor --strict</code> for health gating</li>
         </ul>
       </div>
 
@@ -475,7 +671,8 @@ const installCmd = "npx beacon-docs init";
       - <span style="color:var(--accent-bright)">uses</span><span style="color:var(--text)">:</span> actions/checkout@v4
       - <span style="color:var(--accent-bright)">uses</span><span style="color:var(--text)">:</span> actions/setup-node@v4
         <span style="color:var(--accent-bright)">with</span><span style="color:var(--text)">:</span> <span style="color:var(--text-dim)">&#123; node-version: 20 &#125;</span>
-      - <span style="color:var(--accent-bright)">run</span><span style="color:var(--text)">:</span> npx beacon-docs lint --strict</pre>
+      - <span style="color:var(--accent-bright)">run</span><span style="color:var(--text)">:</span> npx beacon-docs lint --strict
+      - <span style="color:var(--accent-bright)">run</span><span style="color:var(--text)">:</span> npx beacon-docs doctor --strict</pre>
         </div>
         <button class="code-block-copy" data-copy="name: Beacon docs lint
 on:
@@ -490,7 +687,8 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with: { node-version: 20 }
-      - run: npx beacon-docs lint --strict">Copy</button>
+      - run: npx beacon-docs lint --strict
+      - run: npx beacon-docs doctor --strict">Copy</button>
       </div>
     </div>
   </div>
@@ -502,7 +700,7 @@ jobs:
 <section class="cta-section">
   <div class="container">
     <h2 class="cta-title">Start in 30 seconds.</h2>
-    <p class="cta-sub">One command. Complete docs structure. AI rules for every agent.</p>
+    <p class="cta-sub">One command. Complete docs structure. AI rules that tell agents <em>when</em> to write.</p>
 
     <div class="install-box" style="margin-inline:auto;margin-bottom:1.75rem;">
       <div class="install-prompt">
@@ -538,9 +736,11 @@ jobs:
       <span class="footer-sep">·</span>
       <span>Made by <a href="https://github.com/Juliocbm" target="_blank" rel="noopener">julio</a></span>
       <span class="footer-sep">·</span>
-      <span><code style="font-family:var(--mono);font-size:0.8em">v0.1.0</code></span>
+      <a href={versionHref} target="_blank" rel="noopener"><code style="font-family:var(--mono);font-size:0.8em">v{version}</code></a>
       <span class="footer-sep">·</span>
       <a href="https://www.npmjs.com/package/beacon-docs" target="_blank" rel="noopener">npm</a>
+      <span class="footer-sep">·</span>
+      <a href="https://github.com/Juliocbm/beacon-docs/blob/main/CHANGELOG.md" target="_blank" rel="noopener">Changelog</a>
       <span class="footer-sep">·</span>
       <a href="https://github.com/Juliocbm/beacon-docs" target="_blank" rel="noopener">GitHub</a>
     </div>
@@ -548,7 +748,6 @@ jobs:
 </footer>
 
 <script>
-  // Copy-to-clipboard helper
   function setupCopy(btnId: string, textId: string): void {
     const btn = document.getElementById(btnId) as HTMLButtonElement | null;
     const textEl = document.getElementById(textId) as HTMLElement | null;
@@ -561,7 +760,6 @@ jobs:
         btn.textContent = '✓ Copied';
         setTimeout(() => {
           btn.classList.remove('copied');
-          // Restore original content
           btn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg> Copy`;
         }, 2000);
       } catch {
@@ -573,7 +771,6 @@ jobs:
   setupCopy('copy-install', 'install-cmd-text');
   setupCopy('copy-cta', 'install-cmd-cta');
 
-  // Generic code block copy buttons (data-copy attr)
   document.querySelectorAll<HTMLButtonElement>('.code-block-copy[data-copy]').forEach((btn) => {
     btn.addEventListener('click', async () => {
       const text = btn.dataset.copy ?? '';
