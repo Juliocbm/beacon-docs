@@ -1,0 +1,15 @@
+{
+  "name": "beacon-docs-plugins",
+  "description": "Claude Code plugins that complement beacon-docs — currently just the Beacon companion plugin; future home for Cursor/Codex/Gemini variants and MCP integrations.",
+  "owner": {
+    "name": "julio",
+    "url": "https://github.com/Juliocbm"
+  },
+  "plugins": [
+    {
+      "name": "beacon",
+      "source": "./claude-plugin",
+      "description": "Conversational companion for beacon-docs. Wraps the CLI with slash-skills (init, new, doctor, explain, archive) and an always-available workflow skill that nudges Claude to create the right Beacon documents at the right conversational moments."
+    }
+  ]
+}

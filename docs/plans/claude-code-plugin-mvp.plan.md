@@ -247,24 +247,63 @@ T1 research surfaced three findings that materially change the original design. 
 - We instruct Claude in the skill body to verify Beacon presence by checking for the config file as its first step, then degrade to "advisory mode" if absent.
 - This is a slight UX downgrade from the original aspiration (less deterministic auto-loading) but workable.
 
-### Revision 3 — Subfolder distribution requires extra work
+### Revision 3 — Subfolder distribution requires extra work (revised again after T2 — see "Plan revisions after T2" below)
 
 **Original assumption:** `claude plugin install user/repo` or similar would handle the `claude-plugin/` subfolder transparently.
 
-**Reality:** The standard `claude plugin install <name>` command expects marketplace plugins. For a plugin living in a repo subfolder, we have three viable paths:
+**Reality (as of T1):** The standard `claude plugin install <name>` command expects marketplace plugins. For a plugin living in a repo subfolder, three theoretical paths were identified:
 
 | Path | What it requires | When to use |
 |---|---|---|
 | **A. Local dev install** | `claude plugin install --plugin-dir ./claude-plugin/` | Day 1 — for our own testing + early adopters who clone the repo |
-| **B. Custom marketplace** | Create `claude-plugin/marketplace.json` referencing the plugin via `git-subdir` source type. Users add the marketplace, then install. | Once we want broader distribution without splitting the repo |
+| **B. Custom marketplace** | Create `marketplace.json` referencing the plugin via relative path or `git-subdir`. Users add the marketplace, then install. | Once we want broader distribution without splitting the repo |
 | **C. Split to standalone repo** | Move `claude-plugin/` to its own GitHub repo, submit to community marketplace | When we're confident the plugin has traction and want frictionless distribution |
 
-**Impact on plan:**
-- T7 (validation) uses path A — local install via `--plugin-dir`.
-- T8 (release prep) initially uses path A and documents path B as a follow-up. Path C is the deferred "split repo" trigger from ADR-012.
-- README for the plugin should document path A (clone + local install) as the supported MVP install path.
+**Impact on plan (as written at T1):**
+- T7 (validation) was to use path A — local install via `--plugin-dir`.
+- T8 (release prep) was to start with path A and document path B as a follow-up.
 
-ADR-012's "splits to separate repo only when registry requires it" trigger is now closer than expected: if we ever want to be in the official community marketplace, we'll need path C.
+**Outcome:** Path A turned out to be non-viable in Claude Code v2.1.144 — `--plugin-dir` does not exist as a flag on `claude plugin install`. See [`Plan revisions after T2`](#plan-revisions-after-t2) and [ADR-013](../adr/ADR-013-marketplace-distribution-for-claude-plugin.md) for the corrected distribution model.
+
+ADR-012's "splits to separate repo only when registry requires it" trigger is still the long-term path; T2 reality just moved us to path B sooner than expected.
+
+## Plan revisions after T2
+
+T2 (scaffold + hands-on install validation) shipped two surprising findings that adjust the plan going forward.
+
+### Revision 4 — Path A is unavailable; MVP uses Path B from day 1
+
+**Discovery:** during T2 install testing on Claude Code v2.1.150, `claude plugin install --plugin-dir <path>` returned `error: unknown option '--plugin-dir'`. The current Claude Code CLI only accepts marketplace-resolved plugin names.
+
+**Decision (ADR-013):** ship Path B (custom marketplace at repo root) as the MVP install mechanism. New artifact: `beacon-docs/.claude-plugin/marketplace.json` declaring marketplace name `beacon-docs-plugins` with a single plugin entry pointing to `./claude-plugin`.
+
+**End-user install flow** (now canonical, replaces the `--plugin-dir` flow from earlier plan iterations):
+
+```bash
+cd beacon-docs
+claude plugin marketplace add ./
+claude plugin install beacon@beacon-docs-plugins
+```
+
+**Impact on remaining tasks:**
+
+- **T5** (`claude-plugin/README.md`): updated in this same revision to show the marketplace install flow. Old `--plugin-dir` instructions removed.
+- **T7** (manual validation): partially complete already — see [`docs/evaluations/2026-05-25-claude-plugin-t2-validation.eval.md`](../evaluations/2026-05-25-claude-plugin-t2-validation.eval.md). The marketplace + install + skill loading + auto-invocation all worked end-to-end on first try.
+- **T8** (release prep): the "decide initial version" item is settled (`0.1.0`). The "announce in beacon-docs CHANGELOG" item still pending. The "tag the plugin release" item likely defers until a stable beacon plugin v0.1.0 is meaningful to publish; T3 + T4 fill the skills before that's worth tagging.
+
+ADR-013 captures the full decision rationale, alternatives considered, and validation evidence.
+
+### Revision 5 — T2 validation reduced T3 risk substantially
+
+**Surprising discovery:** the always-available `beacon-workflow` skill auto-invoked correctly on the **first** ADR-relevant conversational prompt in a fresh Claude Code session, with only the placeholder body content from T2. It also composed naturally with `superpowers:brainstorming` (Claude loaded both skills for the task) and triggered Claude to consult existing ADRs + the beacon config before responding.
+
+**Why this matters for T3:**
+
+- The `description` field on the skill is doing more work than expected. Auto-invocation isn't a problem to solve in T3 — it already works.
+- T3 can focus 100% on **body depth**: more triggers, advisory mode, persistence-rule reinforcement, examples of conversational patterns Claude should recognize.
+- The architectural bet of ADR-012 (skill-level integration with the codebase) is validated. The plugin works *as designed*.
+
+Full observations captured in the linked eval. Recommended for anyone authoring future skills in this plugin to read first.
 
 ---
 

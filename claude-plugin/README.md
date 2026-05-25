@@ -8,31 +8,39 @@ This is a **Claude Code plugin**. It lives in a subfolder of the main `beacon-do
 
 ## Prerequisites
 
-- **Claude Code** (CLI version that supports plugin install — verify with `claude plugin --help`).
+- **Claude Code v2.1.144 or later** (verify with `claude --version`). Earlier versions may not have `claude plugin marketplace` at all.
 - *(Recommended)* **beacon-docs** CLI installed globally or per-project:
   ```bash
   npm install -g beacon-docs
   ```
   The plugin works without it in **advisory mode** (provides convention guidance but cannot execute commands).
 
-## Install (local / dev — MVP path)
+## Install
 
-Subfolder distribution from a git repo isn't directly supported by Claude Code's `claude plugin install <name>` today, so the MVP install path is local:
+The MVP distributes via a **local marketplace** declared at the repo root. Clone the repo, register the marketplace, then install:
 
 ```bash
 # 1. Clone the beacon-docs repo
 git clone https://github.com/Juliocbm/beacon-docs.git
+cd beacon-docs
 
-# 2. Point Claude Code at the plugin subfolder
-claude plugin install --plugin-dir ./beacon-docs/claude-plugin
+# 2. Register the local marketplace (one-time, picks up .claude-plugin/marketplace.json)
+claude plugin marketplace add ./
+
+# 3. Install the plugin from that marketplace
+claude plugin install beacon@beacon-docs-plugins
 ```
 
-Future-friendly install paths (planned, not yet shipped):
+That's it. Open a fresh Claude Code session and the plugin loads automatically.
 
-- **Custom marketplace** — beacon-docs ships a `marketplace.json` that maps the subfolder via `git-subdir` source type. Users add the marketplace, then install.
-- **Standalone repo** — if/when the plugin gains traction, split into its own repo for submission to the community marketplace.
+### Why a local marketplace instead of `--plugin-dir`?
 
-See the [plan's Plan revisions section](https://github.com/Juliocbm/beacon-docs/blob/main/docs/plans/claude-code-plugin-mvp.plan.md#plan-revisions-after-t1) for the full distribution analysis.
+Claude Code's `claude plugin install` only accepts marketplace-resolved plugin names today (no `--plugin-dir` flag). The local marketplace pattern is the supported workflow for testing or distributing plugins from a local filesystem path. See [ADR-013](https://github.com/Juliocbm/beacon-docs/blob/main/docs/adr/ADR-013-marketplace-distribution-for-claude-plugin.md) for the full rationale.
+
+### Future install paths
+
+- **HTTPS-hosted marketplace** — serve `marketplace.json` from a public URL so users don't need to clone the repo first. Not yet shipped.
+- **Community marketplace submission** — once the plugin has independent traction, split into a standalone repo and submit to `claude-plugins-community` for `claude plugin install beacon` (no `@<marketplace>` suffix needed). Tracked by ADR-012's "split when registry requires" trigger.
 
 ## Verify the plugin loaded
 
