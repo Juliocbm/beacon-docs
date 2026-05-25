@@ -1,5 +1,6 @@
 ---
-description: Initialize beacon-docs in the current project. Inspects the repo, recommends a project type and add-ons, then runs beacon init. Use when the user wants to set up Beacon documentation in a project that doesn't yet have it.
+description: Manual slash command (invoke explicitly as /beacon:beacon-init). Initializes beacon-docs in the current project after inspecting the repo to recommend project type and add-ons.
+disable-model-invocation: true
 allowed-tools:
   - Bash
   - Read

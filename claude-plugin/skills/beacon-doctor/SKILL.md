@@ -1,5 +1,6 @@
 ---
-description: Run beacon doctor health checks, parse findings, and propose specific actions for each one (archive a stale plan, accept a stuck ADR, etc.). Use before tagging a release or whenever the user wants a docs-tree health snapshot.
+description: Manual slash command (invoke explicitly as /beacon:beacon-doctor). Runs beacon doctor, parses findings, and proposes specific actions per finding (archive a stale plan, accept a stuck ADR, etc.). For auto-detected pre-release moments, beacon-workflow handles them instead.
+disable-model-invocation: true
 allowed-tools:
   - Bash
   - Read

@@ -177,6 +177,14 @@ Final SKILL.md committed at `claude-plugin/skills/beacon-workflow/SKILL.md`. Pha
 
 **Quality bar established for remaining tasks:** T4 (5 invocable skills) should follow the same TDD discipline — baseline test per skill BEFORE writing body. Skipping this would be a regression in quality.
 
+**Phase 5 finding (manual validation, 2026-05-25):** Test 1 passed bulletproof. Test 2 surfaced an architectural collision: the invocable skill `beacon-new` (placeholder body from T2, with a broad description) was auto-invoked by Claude before `beacon-workflow`, because beacon-new's description matched "create a doc" more specifically. The result: Pattern 1 ("ask one question on suffix collision") did NOT fire — beacon-new silently ran `beacon new plan refactor-auth`, renaming the user's explicit `refactor-auth.md` to `refactor-auth.plan.md`. Convention-correct but bypassed user intent.
+
+**Architectural fix applied (Option A):** added `disable-model-invocation: true` to frontmatter of all 5 invocable skill SKILL.md files, plus narrowed descriptions to declare them as **manual slash commands only**. Now `beacon-workflow` is the only auto-invoked skill in the plugin; `/beacon:beacon-init`, `/beacon:beacon-new`, `/beacon:beacon-doctor`, `/beacon:beacon-explain`, `/beacon:beacon-archive` only fire when the user explicitly invokes them.
+
+**Impact on T4:** when we write the real bodies of the 5 invocable skills, they should still incorporate the relevant bridge moments from beacon-workflow (e.g., beacon-new must handle suffix collisions per Pattern 1) — but they only run when the user opts in via slash, so they're not competing with workflow's auto-invocation.
+
+Tests 3, 4, 5 of Phase 5 are pending (need fresh Claude Code sessions after plugin update).
+
 ### T4 — Write the 5 invocable skills (`skills/beacon-*/SKILL.md`)
 
 Note: these are SKILLS, not legacy `commands/*.md`. Each lives in its own folder; invocation becomes `/beacon:beacon-<action>`.

@@ -1,5 +1,6 @@
 ---
-description: Create a new Beacon document from a natural-language description. Maps phrases like "plan to refactor auth" or "ADR for the event bus decision" to the correct beacon new <type> <slug> invocation. Use when the user wants to create any doc type (plan, adr, pattern, eval, todo, etc.) in a Beacon-managed project.
+description: Manual slash command (invoke explicitly as /beacon:beacon-new <description>). Translates a natural-language description into a beacon new <type> <slug> invocation. For auto-detected doc creation triggers, beacon-workflow handles them instead.
+disable-model-invocation: true
 allowed-tools:
   - Bash
 arguments:

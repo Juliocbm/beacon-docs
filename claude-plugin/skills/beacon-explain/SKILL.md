@@ -1,5 +1,6 @@
 ---
-description: Explain a Beacon lint rule, doctor check, or plugin-contributed item. Searches built-in lint rules first, falls through to doctor checks. Use when the user asks "what does <name> do?" or "why is this flagged?".
+description: Manual slash command (invoke explicitly as /beacon:beacon-explain <term>). Looks up a Beacon lint rule, doctor check, or plugin-contributed item and surfaces the verbose explanation. For auto-detected "what does X do" questions about Beacon internals, beacon-workflow handles them instead.
+disable-model-invocation: true
 allowed-tools:
   - Bash
 arguments:
