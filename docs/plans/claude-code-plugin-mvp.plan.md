@@ -177,13 +177,21 @@ Final SKILL.md committed at `claude-plugin/skills/beacon-workflow/SKILL.md`. Pha
 
 **Quality bar established for remaining tasks:** T4 (5 invocable skills) should follow the same TDD discipline — baseline test per skill BEFORE writing body. Skipping this would be a regression in quality.
 
-**Phase 5 finding (manual validation, 2026-05-25):** Test 1 passed bulletproof. Test 2 surfaced an architectural collision: the invocable skill `beacon-new` (placeholder body from T2, with a broad description) was auto-invoked by Claude before `beacon-workflow`, because beacon-new's description matched "create a doc" more specifically. The result: Pattern 1 ("ask one question on suffix collision") did NOT fire — beacon-new silently ran `beacon new plan refactor-auth`, renaming the user's explicit `refactor-auth.md` to `refactor-auth.plan.md`. Convention-correct but bypassed user intent.
+**Phase 5 (manual validation, 2026-05-25):** ✅ **ALL 5 TESTS PASSED.** Full retrospective in [`docs/evaluations/2026-05-25-claude-plugin-t3-validation.eval.md`](../evaluations/2026-05-25-claude-plugin-t3-validation.eval.md). Highlights:
 
-**Architectural fix applied (Option A):** added `disable-model-invocation: true` to frontmatter of all 5 invocable skill SKILL.md files, plus narrowed descriptions to declare them as **manual slash commands only**. Now `beacon-workflow` is the only auto-invoked skill in the plugin; `/beacon:beacon-init`, `/beacon:beacon-new`, `/beacon:beacon-doctor`, `/beacon:beacon-explain`, `/beacon:beacon-archive` only fire when the user explicitly invokes them.
+- Test 1 (discovery + supersede): PASS — ran `beacon lint` as self-check unprompted; cited convention rule 5 explicitly
+- Test 2 (Pattern 1 suffix collision): PARTIAL on first run → Option A REFACTOR → re-test PASS
+- Test 3 (Pattern 2 deferral): PASS — quoted skill rationalization verbatim; cross-session reference to refactor-auth.plan.md
+- Test 4 (Pattern 3 post-release): PASS — used `‹…›` placeholders instead of fabricating; surfaced plan ambiguity as structured question
+- Test 5 (Pattern 4 advisory): PASS — offered "structured-manual mode" as explicit option
 
-**Impact on T4:** when we write the real bodies of the 5 invocable skills, they should still incorporate the relevant bridge moments from beacon-workflow (e.g., beacon-new must handle suffix collisions per Pattern 1) — but they only run when the user opts in via slash, so they're not competing with workflow's auto-invocation.
+**Architectural fix applied (Option A, commit `b866cc9` + version bump `e1b9f3c`):** added `disable-model-invocation: true` to frontmatter of all 5 invocable skill SKILL.md files, plus narrowed descriptions to declare them as **manual slash commands only**. Now `beacon-workflow` is the only auto-invoked skill in the plugin; `/beacon:beacon-init`, `/beacon:beacon-new`, `/beacon:beacon-doctor`, `/beacon:beacon-explain`, `/beacon:beacon-archive` only fire when the user explicitly invokes them.
 
-Tests 3, 4, 5 of Phase 5 are pending (need fresh Claude Code sessions after plugin update).
+**Bonus quality observed (not designed in):** cross-session document memory, honest-about-uncertainty (`‹…›` placeholders), structured ambiguity resolution, self-check rule firing without prompts, clean composition with `superpowers:brainstorming`.
+
+**Critical lesson for T4:** subagent TDD tests skills in isolation, missing cross-skill collisions. The Option A finding was caught only in Phase 5 manual validation. **T4 methodology must add a cross-skill integration test per invocable skill** — verify the new skill doesn't preempt workflow on auto-cases.
+
+**T3 STATUS: ✅ CLOSED.** Skill is empirically bulletproof. Phase 5 complete. Ready to start T4.
 
 ### T4 — Write the 5 invocable skills (`skills/beacon-*/SKILL.md`)
 
