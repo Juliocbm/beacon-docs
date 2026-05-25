@@ -160,10 +160,22 @@ The skill detects Beacon absence at startup and degrades gracefully. This lets n
 
 **Validation status:** Structure should be loadable via `claude plugin install --plugin-dir ./claude-plugin` but skills won't do useful work yet — they're placeholders. T7 (validation) will confirm actual install + load behavior. Real skill bodies come in T3 + T4.
 
-### T3 — Write the main skill (`beacon-workflow`)
-- [ ] Frontmatter: `name: beacon-workflow`, `description: ...`, auto-load conditions.
-- [ ] Body sections: Detection logic, Conversational triggers, Lifecycle reminders, Advisory mode.
-- [ ] Cross-reference [docs/_meta/convention.md](../_meta/convention.md) so the skill stays consistent with the convention source-of-truth.
+### T3 — Write the main skill (`beacon-workflow`) ✅ DONE 2026-05-25
+- [x] Frontmatter: `name: beacon-workflow`, `description: ...` (triggers only, no workflow summary per `superpowers:writing-skills` guidance).
+- [x] Body sections: mode detection (active/advisory), discovery-first rule, conversational triggers, 5 bridge moments (direct file write, deferral, post-release, no-Beacon, CLI-fail), rationalization table, red flags, self-checks.
+- [x] Cross-reference [docs/_meta/convention.md](../_meta/convention.md) implicitly — body references the CLAUDE.md rules and tells Claude to consult convention.md when uncertain.
+
+**TDD trail (followed `superpowers:writing-skills` Iron Law: NO SKILL WITHOUT A FAILING TEST FIRST):**
+
+- **RED phase:** dispatched 5 subagents in parallel with 5 distinct pressure scenarios (existing-ADR collision, direct file-write request, mid-flow deferral, post-release retrospective, advisory mode with no Beacon). Each subagent gave 250-350 word candid baselines documenting specific rationalizations.
+- **GREEN phase:** wrote SKILL.md body (~1300 words) addressing the exact rationalizations captured. Body length over the <500 target was justified by 5 distinct bridge patterns + rationalization table + red flags list (all mandated by writing-skills).
+- **VERIFY phase:** re-dispatched same 5 scenarios with SKILL.md content loaded in context. All 5 subagents now complied with the skill. Verification surfaced 3 new gaps not in the original baselines: (a) no fallback when `beacon` CLI itself fails, (b) no skeleton template for eval content, (c) "structured-manual mode" missing for users who pick manual over `beacon init`.
+- **REFACTOR phase:** added Pattern 5 (CLI-fail fallback), eval skeleton in Pattern 3, and structured-manual mode addendum to Pattern 4. Also added 2 new rationalization-table rows and 2 new red flags.
+- **REFACTOR re-verify:** dispatched 2 targeted subagents for the new patterns. Both passed cleanly with explicit self-reports that the new content "names the urge as the failure mode" and prevents the slip.
+
+Final SKILL.md committed at `claude-plugin/skills/beacon-workflow/SKILL.md`. Phase 5 (manual validation by user in fresh Claude Code session) still pending.
+
+**Quality bar established for remaining tasks:** T4 (5 invocable skills) should follow the same TDD discipline — baseline test per skill BEFORE writing body. Skipping this would be a regression in quality.
 
 ### T4 — Write the 5 invocable skills (`skills/beacon-*/SKILL.md`)
 
