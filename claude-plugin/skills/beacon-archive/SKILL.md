@@ -1,10 +1,12 @@
 ---
-description: Manual slash command (invoke explicitly as /beacon:beacon-archive). Lists active plans (or roadmaps) and helps archive shipped ones with a selection UX. For auto-detected post-shipping moments where a specific plan should be archived, beacon-workflow handles them instead.
+description: Manual slash command (invoke explicitly as /beacon:beacon-archive [slug]). Lists active plans (or roadmaps) and helps archive shipped ones with a selection UX, or accepts an optional slug to propose a specific item directly. For auto-detected post-shipping moments where a specific plan should be archived, beacon-workflow handles them instead.
 disable-model-invocation: true
 allowed-tools:
   - Bash
   - Read
   - Glob
+arguments:
+  - slug
 ---
 
 # /beacon:beacon-archive

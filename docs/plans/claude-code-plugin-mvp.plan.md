@@ -193,15 +193,43 @@ Final SKILL.md committed at `claude-plugin/skills/beacon-workflow/SKILL.md`. Pha
 
 **T3 STATUS: ✅ CLOSED.** Skill is empirically bulletproof. Phase 5 complete. Ready to start T4.
 
-### T4 — Write the 5 invocable skills (`skills/beacon-*/SKILL.md`)
+### T4 — Write the 5 invocable skills (`skills/beacon-*/SKILL.md`) ✅ DONE 2026-05-25
 
 Note: these are SKILLS, not legacy `commands/*.md`. Each lives in its own folder; invocation becomes `/beacon:beacon-<action>`.
 
-- [ ] `beacon-init` — repo inspection logic + `beacon init` invocation.
-- [ ] `beacon-new` — natural language → command parsing. Cover the 11 doc types. Use `arguments: [description]` frontmatter and `$ARGUMENTS` substitution.
-- [ ] `beacon-doctor` — call `beacon doctor --json` via Bash, parse findings, propose actions per finding. Declare `allowed-tools: ["Bash"]` in frontmatter to skip permission prompts.
-- [ ] `beacon-explain` — call `beacon lint --explain <name>` first, fall through to `beacon doctor --explain <name>`. Arguments: `[term]`.
-- [ ] `beacon-archive` — list `docs/plans/*.plan.md` via Bash, prompt user to select, call `beacon archive plan <slug>`.
+- [x] `beacon-explain` — `beacon lint --explain <name>` first, fall through to `beacon doctor --explain`. Arguments: `[term]`. Body addresses paraphrase/sequential/typo/hallucinate/ask-clarification patterns. Commit `bbb7659`.
+- [x] `beacon-doctor` — `beacon doctor --json`, parse findings, propose actions per finding. All-clear minimalism + per-finding playbook + `--force` protocol (read file, surface unchecked, 3 paths, never auto-tick). Commit `6ba62a3`.
+- [x] `beacon-init` — 5-mode state machine (already-initialized / empty-fresh / signals-no-docs / existing-non-beacon / monorepo). Type CAN be inferred, add-ons CANNOT (always ask). Commit `6537906`.
+- [x] `beacon-new` — natural language → command parsing. Pattern 1 (path mode) explicitly encodes the Option A architectural lesson: literal user paths get a clarifying question on suffix mismatch, never silent transformation. Arguments: `[description]`. Commit `28fdb45`.
+- [x] `beacon-archive` — selection vs direct mode, per-item judgment rules (N/N, N-1/N, 0/N+recent, 0/N+stale), `--force` protocol mirrors doctor, never auto-tick checkboxes, roadmap support with type labels. Arguments: `[slug]` (optional). Commit `01a21c3`.
+
+**TDD trail (each skill followed `superpowers:writing-skills` Iron Law — same discipline as T3):**
+
+- **RED phase per skill:** 5 parallel pressure-scenario subagents dispatched per skill. ~25 baselines total across T4.1-T4.5. Each baseline ~300 words documenting verbatim rationalizations the agent reached for under pressure.
+- **GREEN phase per skill:** SKILL.md body written addressing the exact rationalizations captured. Body lengths: explain ~1100 words, doctor ~1400, init ~1700, new ~2000, archive ~1800. Over the <500 target, justified by per-skill pattern depth (5-mode state machine for init, Pattern 1 architecture for new, 5-finding playbook for doctor, etc.).
+- **VERIFY phase per skill:** 5 fresh subagents re-dispatched with the skill loaded. All 25+ verifies passed. Subagents explicitly quoted rationalization-table rows as what defused the failure mode (e.g., verify D on archive: *"Naming the exact failure mode ('earn the turn by padding') is what makes it stick — unnamed pulls win."*).
+- **REFACTOR phase:** ZERO refactors needed across all 5 T4 skills. The "named-and-shamed" rationalization technique proven in T3 generalized cleanly.
+
+**Cross-skill consistency holds (verified Paso 3 — see below).**
+
+### Paso 3 — Cross-skill integration check ✅ PASS 2026-05-25
+
+Verified the 6 skills compose correctly without preemption or duplication.
+
+- **Option A architecture intact** — all 5 invocable skills carry `disable-model-invocation: true`. Only `beacon-workflow` auto-loads.
+- **No preemption of workflow auto-cases** — each invocable's "Compose, don't duplicate" section explicitly disclaims auto-loading and routes natural-language triggers back to `beacon-workflow`.
+- **Cross-skill mirrors verified:**
+  - `--force` protocol identical between doctor + archive (read file → surface unchecked → 3 paths → NEVER auto-tick).
+  - Empty-state minimalism cross-referenced (archive cites doctor's all-clear case as same calibration bug).
+  - Pattern 1 (suffix collision) consistent between workflow + beacon-new with explicit cross-reference in both.
+  - "Read context before destructive op" consistent across init/doctor/archive.
+  - `--json` mandate consistent per CLI capability (doctor yes, explain no).
+- **Single mechanical fix applied:** `beacon-archive` frontmatter was missing the `arguments: [slug]` declaration (body always supported optional slug for direct mode). Fixed in this same step.
+- **Observations deferred to Paso 4 retro:**
+  - 5 invocables omit `name:` frontmatter field (rely on folder-name fallback; works in Claude Code but inconsistent with `beacon-workflow` which declares it).
+  - Language inconsistency in `--force` templates: archive uses Spanish, doctor uses English. Both functional, both convey the same 3-path consent flow.
+
+**STATUS:** integration clean, no blocking issues. Ready for Paso 4 (retro eval).
 
 ### T5 — `claude-plugin/README.md`
 - [ ] What this plugin is, what it does, prerequisites (Beacon optional).
