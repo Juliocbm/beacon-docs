@@ -1,5 +1,37 @@
 # beacon-docs
 
+## Companion plugin 0.2.0 — 2026-05-26
+
+**Claude Code companion plugin (`claude-plugin/`) ships its first feature release.** Independent of the CLI version. Install via:
+
+```bash
+git clone https://github.com/Juliocbm/beacon-docs.git
+cd beacon-docs
+claude plugin marketplace add ./
+claude plugin install beacon@beacon-docs-plugins
+```
+
+### What's in 0.2.0
+
+All 6 skills now have empirically validated bodies (previous 0.1.x releases were scaffolding):
+
+- **`beacon-workflow`** *(always-available)* — bridges conversational signals to `beacon new` / `beacon archive` / `beacon doctor`. Five bridge patterns: direct file-write requests, scope deferrals, post-release retrospectives, advisory mode without Beacon, and CLI-fail fallback (creates docs manually following convention if `beacon` is unavailable).
+- **`/beacon:beacon-init`** — 5-mode state machine (already-initialized / empty-fresh / signals-no-docs / existing-non-beacon / monorepo). Project type can be inferred; add-ons always require user input.
+- **`/beacon:beacon-new <description>`** — natural language → `beacon new <type> <slug>`. Path-mode handling explicitly asks before transforming literal user paths (Pattern 1 — prevents silent suffix renaming).
+- **`/beacon:beacon-doctor`** — runs `beacon doctor --json`, parses findings, proposes informed actions per finding (reads context first), three-path `--force` consent protocol (force / address first / cancel) with explicit prohibition against silently checking off TODOs to bypass safety.
+- **`/beacon:beacon-explain <term>`** — surfaces verbose explanations for lint rules and doctor checks; parallel lint + doctor lookup; ALL-CATALOG mode when no term is passed.
+- **`/beacon:beacon-archive [slug]`** — selection UX with per-item judgment (recommends N/N checked, surfaces N-1 / stale items as ambiguous, leaves recent active work alone). Same `--force` protocol as doctor.
+
+### Architecture: Option A (manual-invocation-only for slash-skills)
+
+The 5 invocable skills carry `disable-model-invocation: true` in their frontmatter — they only fire when the user types the slash command. The always-available `beacon-workflow` is the only auto-loaded skill in the plugin. This prevents the invocable skills from preempting workflow when natural-language triggers occur in conversation.
+
+### Build process
+
+All 5 invocable skills were authored via strict TDD (per `superpowers:writing-skills`): for each, 5 parallel subagent baseline scenarios established what agents naturally do under pressure, then the skill body was written to address the observed rationalizations, then 5 fresh subagents verified compliance. ZERO REFACTOR phases needed across all 5 T4 skills. Paso 5 manual validation in fresh Claude Code: **4/4 tests PASS**, including the `--force` consent-laundering shortcut and Pattern 1 silent-transform regression test.
+
+Full process trail in [`docs/plans/claude-code-plugin-mvp.plan.md`](https://github.com/Juliocbm/beacon-docs/blob/main/docs/plans/claude-code-plugin-mvp.plan.md). Retrospective in [`docs/evaluations/2026-05-26-claude-plugin-t4-retrospective.eval.md`](https://github.com/Juliocbm/beacon-docs/blob/main/docs/evaluations/2026-05-26-claude-plugin-t4-retrospective.eval.md).
+
 ## 0.4.1
 
 ### Patch Changes

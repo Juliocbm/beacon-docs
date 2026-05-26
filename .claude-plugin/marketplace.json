@@ -9,7 +9,7 @@
     {
       "name": "beacon",
       "source": "./claude-plugin",
-      "description": "Conversational companion for beacon-docs. Wraps the CLI with slash-skills (init, new, doctor, explain, archive) and an always-available workflow skill that nudges Claude to create the right Beacon documents at the right conversational moments."
+      "description": "Conversational companion for beacon-docs (v0.2.0 — 6 skills shipped). Always-available `beacon-workflow` nudges Claude to create the right Beacon documents at the right conversational moments; five invocable slash-skills (`/beacon:beacon-init`, `/beacon:beacon-new`, `/beacon:beacon-doctor`, `/beacon:beacon-explain`, `/beacon:beacon-archive`) wrap the CLI for explicit operations."
     }
   ]
 }

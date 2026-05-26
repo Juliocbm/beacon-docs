@@ -1,6 +1,6 @@
 # Beacon — Claude Code companion plugin
 
-> **Status:** MVP scaffolding (T2 complete). Skills currently contain placeholder bodies; full behavior arrives in T3 + T4 of the [implementation plan](https://github.com/Juliocbm/beacon-docs/blob/main/docs/plans/claude-code-plugin-mvp.plan.md).
+> **Status:** v0.2.0 — all 6 skills shipped with empirically validated bodies (strict TDD per skill, 4/4 manual validation tests passed). See the [T4 retrospective](https://github.com/Juliocbm/beacon-docs/blob/main/docs/evaluations/2026-05-26-claude-plugin-t4-retrospective.eval.md) for the build process.
 
 Conversational wrapper for [`beacon-docs`](https://beacon-docs.com). Adds five invocable skills (`/beacon:beacon-init`, `/beacon:beacon-new`, `/beacon:beacon-doctor`, `/beacon:beacon-explain`, `/beacon:beacon-archive`) plus one always-available workflow skill that nudges Claude to create the right Beacon documents at the right conversational moments.
 

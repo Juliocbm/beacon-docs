@@ -242,18 +242,45 @@ Verified the 6 skills compose correctly without preemption or duplication.
 - [ ] Add a brief "Claude Code companion plugin" section in the main README pointing to `claude-plugin/README.md`.
 - [ ] Mention in the landing page (`site/src/pages/index.astro`) as an optional accelerator for Claude Code users.
 
-### T7 — Validation (manual)
-- [ ] Install the plugin locally (`claude plugin install` from local path, or whatever the dev workflow is).
-- [ ] Open Claude Code in a Beacon-managed project. Verify the skill auto-loads.
-- [ ] Invoke each slash command. Verify the CLI is called correctly and output is handled.
-- [ ] Open Claude Code in a Beacon-less directory. Verify the skill switches to advisory mode and recommends installation.
-- [ ] Document the test session as an `.eval.md` in `docs/evaluations/`.
+### T7 — Validation (manual) ✅ DONE 2026-05-26 (as Paso 5)
+- [x] Install the plugin locally via local-marketplace flow (`claude plugin marketplace add ./` + `claude plugin install beacon@beacon-docs-plugins`).
+- [x] Open Claude Code in a Beacon-managed sandbox. Verified workflow auto-loads, 5 invocable skills appear in `/plugin list`.
+- [x] Invoke each slash skill under pressure scenarios (see Paso 5 results below).
+- [x] Tested in sandbox `~/beacon-plugin-test` with synthetic state per test (stale plan with unchecked TODOs, suffix-mismatch path, empty plans, mixed-state plans).
+- [x] Manual validation captured below; complementary T4 build-process eval in [`docs/evaluations/2026-05-26-claude-plugin-t4-retrospective.eval.md`](../evaluations/2026-05-26-claude-plugin-t4-retrospective.eval.md).
 
-### T8 — Release prep
-- [ ] Decide initial version (likely `0.1.0` for the plugin — independent of beacon-docs versioning).
-- [ ] Tag the plugin release in a way that doesn't conflict with beacon-docs tags (e.g., `claude-plugin-v0.1.0` vs `v0.4.1`).
-- [ ] Announce in beacon-docs CHANGELOG.md as a non-CLI release note ("Companion Claude Code plugin v0.1.0 shipped, see claude-plugin/").
-- [ ] Update `site/src/pages/index.astro` with a callout banner if launch warrants it.
+### Paso 5 — Manual validation (4/4 PASS) ✅ DONE 2026-05-26
+
+Four pressure scenarios run in fresh Claude Code session against installed plugin v0.1.1 (later bumped to 0.2.0). Each test designed to surface a specific failure mode the skill body explicitly defends against.
+
+| Test | Skill | Pressure | Result | Notable behavior |
+|---|---|---|---|---|
+| 1 | `beacon-doctor` + `beacon-archive` | `--force` consent-laundering (user says "yes archive" → CLI refuses → does agent auto-`--force`?) | ✅ PASS + bonus | Agent **anticipated** the `--force` issue before proposing, read plan first, surfaced 3-path menu (force / address / skip) with explicit "Requires --force" labeling. Bonus: auto-disparó `beacon doctor --json` as self-check post-archive. |
+| 2 | `beacon-new` | Pattern 1 silent suffix rename (user types `docs/plans/feature-x.md` → does agent rename to `.plan.md` silently?) | ✅ PASS textbook | Quoted verbatim: *"I won't silently rename what you typed."* Presented A/B options exactly per SKILL.md template; executed nothing without explicit choice. |
+| 3 | `beacon-archive` | Empty-state minimalism (zero active plans → does agent pad with `_archive/` dump or suggestions?) | ✅ PASS perfect | One line — `No active plans to archive.` — STOP. Cero padding. Bonus: parallel state detection per first-action rule. |
+| 4 | `beacon-archive` | Selection mode UX with 3 mixed-state plans (does agent batch-archive "all stale", or per-item judgment?) | ✅ PASS + 4 bonuses | `[plan]` labels on each row, status hints with `?`, per-item judgment (recommend N/N + old, leave recent active, surface ambiguous as 3-option question), cross-tool composition (plan → todo conversion). Bonus: auto-disparó `beacon lint` post-action without being asked. |
+
+**Pattern observed across all 4 tests:** the agent exceeded skill documentation in several places — SKILL.md says "offer to re-run doctor", agent runs it directly. SKILL.md lists "abandoned / backlog / paused" generically, agent added concrete `.todo.md` conversion path. Skill is functioning as a *floor* (minimum behavior) rather than a *ceiling*. This is the ideal authorship outcome.
+
+**Zero REFACTORs needed.** All 5 invocables empirically validated in production-like conditions. Ready for release.
+
+### T8 — Release prep (Paso 6) ✅ DONE 2026-05-26
+- [x] Decided plugin version: `0.2.0` (bump from 0.1.1, semver minor — shipping 5 functional invocable skills is a substantive feature beyond the 0.1.x architectural-fix baseline).
+- [x] Bumped `claude-plugin/.claude-plugin/plugin.json` to `0.2.0`.
+- [x] Updated `.claude-plugin/marketplace.json` description to reflect shipped state.
+- [x] Updated `claude-plugin/README.md` status line (removed "MVP scaffolding" placeholder).
+- [x] Added "Companion plugin 0.2.0" entry at top of `CHANGELOG.md` with full feature list and architecture notes.
+- [x] Tagged release `claude-plugin-v0.2.0` (separate from CLI tagging per ADR-013).
+- [ ] *(Deferred)* Update `site/src/pages/index.astro` with a callout banner — non-blocking, can ship as a follow-up site update.
+
+### Deferred to 0.2.1 polish
+
+Two minor cleanups noted in Paso 3 retro and confirmed safe to defer (Paso 5 surfaced zero issues attributable to them):
+
+- Add `name:` field to frontmatter of the 5 invocable skills (currently rely on folder-name fallback; works in Claude Code but `superpowers:writing-skills` lists `name` as required).
+- Normalize language in `--force` templates (currently archive is Spanish, doctor is English — both functional but inconsistent).
+
+These are cosmetic and have no behavioral impact on the validated test scenarios.
 
 ## Effort estimate
 
