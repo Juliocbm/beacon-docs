@@ -2,12 +2,10 @@
 
 ## Companion plugin 0.2.0 — 2026-05-26
 
-**Claude Code companion plugin (`claude-plugin/`) ships its first feature release.** Independent of the CLI version. Install via:
+**Claude Code companion plugin (`claude-plugin/`) ships its first feature release.** Independent of the CLI version. Install in two commands (no clone required):
 
 ```bash
-git clone https://github.com/Juliocbm/beacon-docs.git
-cd beacon-docs
-claude plugin marketplace add ./
+claude plugin marketplace add Juliocbm/beacon-docs
 claude plugin install beacon@beacon-docs-plugins
 ```
 

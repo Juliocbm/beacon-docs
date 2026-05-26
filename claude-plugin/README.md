@@ -17,30 +17,30 @@ This is a **Claude Code plugin**. It lives in a subfolder of the main `beacon-do
 
 ## Install
 
-The MVP distributes via a **local marketplace** declared at the repo root. Clone the repo, register the marketplace, then install:
+Two commands, no clone required. The `.claude-plugin/marketplace.json` at the repo root is fetched directly from GitHub:
 
 ```bash
-# 1. Clone the beacon-docs repo
-git clone https://github.com/Juliocbm/beacon-docs.git
-cd beacon-docs
-
-# 2. Register the local marketplace (one-time, picks up .claude-plugin/marketplace.json)
-claude plugin marketplace add ./
-
-# 3. Install the plugin from that marketplace
+claude plugin marketplace add Juliocbm/beacon-docs
 claude plugin install beacon@beacon-docs-plugins
 ```
 
 That's it. Open a fresh Claude Code session and the plugin loads automatically.
 
-### Why a local marketplace instead of `--plugin-dir`?
+### Updates
 
-Claude Code's `claude plugin install` only accepts marketplace-resolved plugin names today (no `--plugin-dir` flag). The local marketplace pattern is the supported workflow for testing or distributing plugins from a local filesystem path. See [ADR-013](https://github.com/Juliocbm/beacon-docs/blob/main/docs/adr/ADR-013-marketplace-distribution-for-claude-plugin.md) for the full rationale.
+Claude Code refreshes the marketplace data at startup by default. New plugin versions land via:
 
-### Future install paths
+```bash
+claude plugin install beacon@beacon-docs-plugins   # re-resolves to latest
+```
 
-- **HTTPS-hosted marketplace** — serve `marketplace.json` from a public URL so users don't need to clone the repo first. Not yet shipped.
-- **Community marketplace submission** — once the plugin has independent traction, split into a standalone repo and submit to `claude-plugins-community` for `claude plugin install beacon` (no `@<marketplace>` suffix needed). Tracked by ADR-012's "split when registry requires" trigger.
+Or inside Claude Code: `/reload-plugins` after a `marketplace update`.
+
+### Alternative install paths
+
+- **Local development** — if you're contributing to the plugin: `claude plugin marketplace add ./` from a local clone of `beacon-docs`.
+- **Pinned to a tag** — `claude plugin marketplace add https://github.com/Juliocbm/beacon-docs.git#claude-plugin-v0.2.0` to freeze on a specific release.
+- **Community marketplace** — once the plugin has independent traction, it'll be split into its own repo and submitted to `claude-plugins-community` for `claude plugin install beacon` (no `@<marketplace>` suffix). Tracked by ADR-012's "split when registry requires" trigger. See [ADR-013](https://github.com/Juliocbm/beacon-docs/blob/main/docs/adr/ADR-013-marketplace-distribution-for-claude-plugin.md) for the full distribution rationale.
 
 ## Verify the plugin loaded
 
