@@ -52,6 +52,7 @@ const versionHref = `https://github.com/Juliocbm/beacon-docs/releases/tag/v${ver
     <ul class="nav-links">
       <li><a href="#commands">Commands</a></li>
       <li><a href="#doctor">Doctor</a></li>
+      <li><a href="#claude-code">Claude Code</a></li>
       <li><a href="#plugins">Plugins</a></li>
       <li><a href={`${docsBase}/install/`}>Docs</a></li>
       <li><a href="https://github.com/Juliocbm/beacon-docs" target="_blank" rel="noopener">GitHub</a></li>
@@ -203,6 +204,77 @@ const versionHref = `https://github.com/Juliocbm/beacon-docs/releases/tag/v${ver
     <p class="behavioral-caption">
       <strong>Persistence rule:</strong> chat memory is session-scoped. If you find yourself relying
       on it to track a decision or follow-up — write the document instead.
+    </p>
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- ========== CLAUDE CODE COMPANION ========== -->
+<section class="behavioral-section" id="claude-code">
+  <div class="container">
+    <p class="section-label">New: companion plugin v0.2.0</p>
+    <h2 class="section-header">Beacon, now inside your Claude Code session.</h2>
+    <p class="section-sub">
+      The companion plugin adds an always-available workflow skill that nudges Claude to use <code>beacon new</code>
+      when a decision, plan, or scope-defer happens in conversation — plus five slash-skills for explicit operations.
+    </p>
+
+    <div class="behavioral-grid">
+      <div class="behavioral-prose">
+        <p class="behavioral-eyebrow">Conversational triggers, automatic</p>
+        <p>
+          You say <em>"decidimos Postgres sobre SQLite"</em> and Claude responds with a draft ADR via
+          <code>beacon new adr</code> — no nag, no prompt to confirm the convention. The skill body knows when to act.
+        </p>
+        <p class="behavioral-eyebrow" style="margin-top:1.5rem;">Five slash-skills for explicit ops</p>
+        <p>
+          <code>/beacon:beacon-init</code>, <code>/beacon:beacon-new</code>, <code>/beacon:beacon-doctor</code>,
+          <code>/beacon:beacon-explain</code>, <code>/beacon:beacon-archive</code> — each one wraps the CLI with informed
+          consent (reads context before destructive ops, asks before silent transforms, surfaces <code>--force</code>
+          requirements explicitly instead of laundering them).
+        </p>
+        <p>
+          Authored via strict TDD per skill — 5 invocable skills, ~50 subagent pressure scenarios, ZERO refactors
+          needed across the entire T4 build. <strong>4/4 manual validation tests passed.</strong>
+        </p>
+      </div>
+
+      <div class="code-panel">
+        <div class="code-panel-header">
+          <span class="code-panel-dot red"></span>
+          <span class="code-panel-dot yellow"></span>
+          <span class="code-panel-dot green"></span>
+          <span class="code-panel-title">Example session</span>
+        </div>
+<pre class="behavioral-code"><span class="fade">You:</span> decidimos Postgres sobre SQLite por el JSON support.
+
+<span class="md-rule"><strong>Claude</strong> <span class="fade">(beacon-workflow loaded)</span>:</span>
+<span class="md-rule">  Esa es una decisión que necesita un ADR. Lo capturo</span>
+<span class="md-rule">  antes de seguir.</span>
+
+<span class="md-rule">$ <code>beacon new adr using-postgres-over-sqlite</code></span>
+<span class="md-rule">  ✔ Created docs/adr/ADR-014-using-postgres-...</span>
+
+<span class="md-rule">  [Drafts ADR inline with Context / Decision /</span>
+<span class="md-rule">  Consequences from session memory]</span>
+
+<span class="md-rule">  Revisa el draft. Si está bien, marco accepted</span>
+<span class="md-rule">  y seguimos con la migración.</span>
+
+<span class="md-h2">## Install (one-time)</span>
+
+<span class="md-rule">$ git clone github.com/Juliocbm/beacon-docs.git</span>
+<span class="md-rule">$ cd beacon-docs</span>
+<span class="md-rule">$ claude plugin marketplace add ./</span>
+<span class="md-rule">$ claude plugin install beacon@beacon-docs-plugins</span></pre>
+      </div>
+    </div>
+
+    <p class="behavioral-caption">
+      <strong>Architecture:</strong> the 5 slash-skills carry <code>disable-model-invocation: true</code> — they only fire when you type the command.
+      The always-available <code>beacon-workflow</code> is the only auto-loaded skill, so the invocables never preempt it on natural-language triggers.
+      <a href="https://github.com/Juliocbm/beacon-docs/releases/tag/claude-plugin-v0.2.0" target="_blank" rel="noopener">Read v0.2.0 release notes →</a>
     </p>
   </div>
 </section>

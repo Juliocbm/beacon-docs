@@ -271,7 +271,8 @@ Four pressure scenarios run in fresh Claude Code session against installed plugi
 - [x] Updated `claude-plugin/README.md` status line (removed "MVP scaffolding" placeholder).
 - [x] Added "Companion plugin 0.2.0" entry at top of `CHANGELOG.md` with full feature list and architecture notes.
 - [x] Tagged release `claude-plugin-v0.2.0` (separate from CLI tagging per ADR-013).
-- [ ] *(Deferred)* Update `site/src/pages/index.astro` with a callout banner — non-blocking, can ship as a follow-up site update.
+- [x] GitHub Release published at https://github.com/Juliocbm/beacon-docs/releases/tag/claude-plugin-v0.2.0 (Latest-release label intentionally unset, kept for CLI).
+- [x] Added landing page section: `site/src/pages/index.astro` `#claude-code` anchor between Behavioral and Commands sections. Reused `.behavioral-*` CSS classes for visual consistency. Nav link added between Doctor and Plugins. `npm run build` clean.
 
 ### Deferred to 0.2.1 polish
 
