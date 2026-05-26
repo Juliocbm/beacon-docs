@@ -13,6 +13,8 @@
 
 ---
 
+<img width="1905" height="322" alt="image" src="https://github.com/user-attachments/assets/29154686-b360-45ba-927d-06fc508ea726" />
+
 ## The problem
 
 You're building with AI agents — Claude Code, Cursor, Codex, Gemini CLI. After a few weeks of vibing, your repo has:
