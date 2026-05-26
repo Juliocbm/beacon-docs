@@ -65,7 +65,13 @@ const versionHref = `https://github.com/Juliocbm/beacon-docs/releases/tag/v${ver
 <section class="hero">
   <div class="container" style="display:flex;flex-direction:column;align-items:center;">
 
-    <!-- What's new banner -->
+    <!-- What's new banners — newest on top -->
+    <a href="https://github.com/Juliocbm/beacon-docs/releases/tag/claude-plugin-v0.2.0" target="_blank" rel="noopener" class="whats-new-pill" style="margin-bottom:0.6rem;">
+      <span class="whats-new-badge">New plugin</span>
+      <span class="whats-new-text">v0.2.0 — Beacon, now inside your <em>Claude Code</em> session</span>
+      <span class="whats-new-arrow">→</span>
+    </a>
+
     <a href={versionHref} target="_blank" rel="noopener" class="whats-new-pill">
       <span class="whats-new-badge">New in v{version}</span>
       <span class="whats-new-text">AI rules now teach <em>when</em> to create docs, not just where they go</span>
